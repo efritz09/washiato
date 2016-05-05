@@ -59,9 +59,12 @@ void loop() {
 }
 
 // Function to calculate moving average/variance and return bool to indicate whether washer is on
+// Using algorithms from here: http://jonisalonen.com/2014/efficient-and-accurate-rolling-standard-deviation/
 bool checkMovement(void) {
-  static float z_u;
-  static float z_s;
+  // Using floats for now to make life easy. May move to ints for better efficiency
+  static float z_u; // moving average of z acceleration
+  static float z_s; // moving average of z variance
+  
   if (accel.available()) {
     accel.read();
     float new_z = (float)accel.z;
