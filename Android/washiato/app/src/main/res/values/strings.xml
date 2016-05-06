@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">washiato</string>
+    <string name="action_settings">Settings</string>
+    <string name="edit_name">User Name</string>
+    <string name="edit_password">Password</string>
+    <string name="button_confirm_login">Login</string>
+    <string name="show_password">Show Password</string>
+    <string name="hide_password">Hide Password</string>
+    <string name="button_register">Sign Up</string>
+    <string name="title_activity_sign_up">SignUpActivity</string>
+    <string name="success_ctrl_activity">Success! Control Activity Launched</string>
+    <string name="fail">Authentication failed</string>
+    <string name="title_activity_control">ControlActivity</string>
+</resources>
