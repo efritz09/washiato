@@ -6,6 +6,8 @@
 #include <FirebaseArduino.h>
 #include "ESP8266_MMA8452Q.h"
 
+#define DOOR_PIN 16
+
 #define MACHINE_UNOCCUPIED 0
 #define MACHINE_WASHING 1
 #define MACHINE_FINISHED 2
@@ -21,33 +23,38 @@ MMA8452Q accel;
 
 void setup() {
   Serial.begin(115200);
+  delay(100);
   Serial.println("");
-  Serial.print("Connecting to ");
+  Serial.print("Attempting to connect to ");
   Serial.println(ssid);
 
+  //Set up GPIO
+  pinMode(DOOR_PIN, INPUT);       // Set door pin as input
+  digitalWrite(DOOR_PIN, HIGH);   // Activate internal pullups (apparently not working)
+  
   //Connect to wifi
   WiFi.begin(ssid);
 
-  // Wait until you are actually connected
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    Serial.print(".");
-  }
-
-  // Get MAC address for use as a unique ID
+    // Get MAC address for use as a unique ID
   byte MAC_array[6];
   WiFi.macAddress(MAC_array);
   for (int i=0; i < sizeof(MAC_array); ++i) {
     MAC_address = MAC_address + String(MAC_array[i], HEX);
   }
 
+  Serial.print("Device MAC: ");
+  Serial.println(MAC_address);
+
+  // Wait until you are actually connected
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
   // Print WiFi data for debugging
   Serial.println("");
   Serial.println("WiFi connected");  
   Serial.print("IP address: ");
   Serial.println(WiFi.localIP());
-  Serial.print("Device MAC: ");
-  Serial.println(MAC_address);
 
   //Set up firebase object
   Firebase.begin("washiato.firebaseIO.com", "N1tSzx0jsBjsBrbpnmHL8Gn3INnlwyrkbyMq110v");
@@ -56,23 +63,52 @@ void setup() {
   // Set up accelerometer object
   accel.init(SCALE_2G, ODR_200);
   Serial.println("Accelerometer Successfully Initialized");
+
+  setFBStatus(MACHINE_UNOCCUPIED);
 }
 
 void loop() {
+ int NextMachineState = MachineState;
  bool isMoving = checkMovement();
- Serial.println(isMoving);
+ bool doorStatus = checkDoor();
+ 
+ switch(MachineState) {
+  case MACHINE_UNOCCUPIED:
+    if (isMoving) {
+      Serial.println("Now Washing");
+      NextMachineState = MACHINE_WASHING;
+      setFBStatus(MACHINE_WASHING);
+    }
+    break;
+  case MACHINE_WASHING:
+    if (!isMoving) {
+      Serial.println("Now Finished");
+      NextMachineState = MACHINE_FINISHED;
+      setFBStatus(MACHINE_FINISHED);
+    }
+    break;
+  case MACHINE_FINISHED:
+    if (doorStatus) {
+      Serial.println("Now Unoccupied");
+      NextMachineState = MACHINE_UNOCCUPIED;
+      setFBStatus(MACHINE_UNOCCUPIED);
+    }
+    break;
+ }
+ MachineState = NextMachineState;
 }
 
 // Function to calculate moving average/variance and return bool to indicate whether washer is on
 // Using algorithms from here: http://jonisalonen.com/2014/efficient-and-accurate-rolling-standard-deviation/
 bool checkMovement(void) {
-  // Using floats for now to make life easy. May move to ints for better efficiency
-  static float x_mu;  // moving average of x acceleration
-  static float x_s;   // moving variance of x acceleration
-  static float y_mu;  // moving average of y acceleration
-  static float y_s;   // moving variance of y acceleration
-  static float z_mu;  // moving average of z acceleration
-  static float z_s;   // moving variance of z acceleration
+  // Initialize averages to current value so that we come out of reset with zero variance
+  accel.read();
+  static float x_mu = (float)accel.x;   // moving average of x acceleration
+  static float x_s;                     // moving variance of x acceleration
+  static float y_mu = (float)accel.y;   // moving average of y acceleration
+  static float y_s;                     // moving variance of y acceleration
+  static float z_mu = (float)accel.z;   // moving average of z acceleration
+  static float z_s;                     // moving variance of z acceleration
 
   static float Accel_Var_Threshold = UPPER_ACCEL_THRESHOLD;
 
@@ -105,5 +141,15 @@ bool checkMovement(void) {
   }
   
   return isMoving;
+}
+
+// Returns true if door switch is open and false if it is closed
+bool checkDoor() {
+  return digitalRead(DOOR_PIN);
+}
+
+// Function to set the status of the washing machine in FB
+void setFBStatus(int newStatus) {
+  Firebase.set("Machines/" + MAC_address + "/Status", newStatus);
 }
 
