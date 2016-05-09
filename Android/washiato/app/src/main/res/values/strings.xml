@@ -13,5 +13,6 @@
     <string name="success_ctrl_activity">Success! Control Activity Launched</string>
     <string name="fail">Authentication failed</string>
     <string name="title_activity_control">ControlActivity</string>
+    <string name="title_activity_cluster">ClusterActivity</string>
 
 </resources>

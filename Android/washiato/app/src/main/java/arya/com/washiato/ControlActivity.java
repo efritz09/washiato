@@ -20,9 +20,12 @@ import android.util.Log;
 import android.view.View;
 import android.content.SharedPreferences;
 
+import java.util.ResourceBundle;
+
 public class ControlActivity extends AppCompatActivity {
 
     private final int MY_PERMISSIONS_REQUEST_NFC = 0;
+    private final int MY_PERMISSIONS_REQUEST_LOCATION = 1;
     private final String TAG = "ControlActivity";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,44 +70,20 @@ public class ControlActivity extends AppCompatActivity {
             case MY_PERMISSIONS_REQUEST_NFC: {
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // permission was granted, yay! Do the
-                    // contacts-related task you need to do.
-                    Log.i(TAG, "Request granted");
-                    /*android.nfc.NfcAdapter mNfcAdapter= android.nfc.NfcAdapter.getDefaultAdapter(ControlActivity.this);
-
-                    //make sure NFC is enabled
-                    if (!mNfcAdapter.isEnabled()) {
-
-                        AlertDialog.Builder alertbox = new AlertDialog.Builder(ControlActivity.this);
-                        alertbox.setTitle("Info");
-                        alertbox.setMessage("Testicles");
-                        alertbox.setPositiveButton("Turn On", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                                    Intent intent = new Intent(Settings.ACTION_NFC_SETTINGS);
-                                    startActivity(intent);
-                                } else {
-                                    Intent intent = new Intent(Settings.ACTION_WIRELESS_SETTINGS);
-                                    startActivity(intent);
-                                }
-                            }
-                        });
-                        alertbox.setNegativeButton("Close", new DialogInterface.OnClickListener() {
-
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-
-                            }
-                        });
-                        alertbox.show();
-
-                    }*/
+                    Log.i(TAG, "NFC granted");
+                    checkNFCon();
 
                 } else {
-                    // permission denied, boo! Disable the
-                    // functionality that depends on this permission.
-                    Log.i(TAG, "Request denied");
+                    //maybe set up a dialog telling them no NFC permission and instructing them
+                    Log.i(TAG, "NFC denied");
+                }
+                return;
+            }
+            case MY_PERMISSIONS_REQUEST_LOCATION: {
+                if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Log.i(TAG, "LOCATION granted");
+                }else {
+                    Log.i(TAG, "LOCATION denied");
                 }
                 return;
             }
@@ -119,61 +98,82 @@ public class ControlActivity extends AppCompatActivity {
         // Here, thisActivity is the current activity
         Log.i(TAG, "Checking permissions...");
 
-        if (ContextCompat.checkSelfPermission(thisActivity, Manifest.permission.NFC) != PackageManager.PERMISSION_GRANTED) {
+        if(ContextCompat.checkSelfPermission(thisActivity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            if(ActivityCompat.shouldShowRequestPermissionRationale(thisActivity, Manifest.permission.ACCESS_FINE_LOCATION)) {
+                Log.i(TAG,"Location 'should we show an explanation'");
+            }else {
+                Log.i(TAG,"Location requesting permission");
+                ActivityCompat.requestPermissions(thisActivity, new String[]{Manifest.permission.ACCESS_FINE_LOCATION},MY_PERMISSIONS_REQUEST_LOCATION);
+            }
+        }else {
+            Log.i(TAG, "Location permission already granted!");
+        }
 
+        if (ContextCompat.checkSelfPermission(thisActivity, Manifest.permission.NFC) != PackageManager.PERMISSION_GRANTED) {
             // Should we show an explanation?
             if (ActivityCompat.shouldShowRequestPermissionRationale(thisActivity, Manifest.permission.NFC)) {
-                Log.i(TAG, "in the if statement");
-
-                // Show an expanation to the user *asynchronously* -- don't block
-                // this thread waiting for the user's response! After the user
-                // sees the explanation, try again to request the permission.
-
+                Log.i(TAG, "NFC 'should we show an explanation'");
             } else {
-                Log.i(TAG, "in the else statement");
-
-                // No explanation needed, we can request the permission.
-
+                Log.i(TAG, "Location requesting permission");
                 ActivityCompat.requestPermissions(thisActivity, new String[]{Manifest.permission.NFC}, MY_PERMISSIONS_REQUEST_NFC);
-
-                // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
-                // app-defined int constant. The callback method gets the
-                // result of the request.
             }
+        }else {
+            Log.i(TAG, "NFC permission already granted!");
+            checkNFCon();
         }
-        else {
-            Log.i(TAG,"permission already granted!");
+    }
 
-            android.nfc.NfcAdapter mNfcAdapter= android.nfc.NfcAdapter.getDefaultAdapter(ControlActivity.this);
-            if (!mNfcAdapter.isEnabled()) {
-                AlertDialog.Builder alertbox = new AlertDialog.Builder(ControlActivity.this);
-                alertbox.setTitle("Info");
-                alertbox.setMessage("Enable NFC communication");
-                alertbox.setPositiveButton("Turn On", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                            Intent intent = new Intent(Settings.ACTION_NFC_SETTINGS);
-                            startActivity(intent);
-                        } else {
-                            Intent intent = new Intent(Settings.ACTION_WIRELESS_SETTINGS);
-                            startActivity(intent);
+
+
+    /*
+    checkNFCon: Checks if NFC is on. Asks user to turn it on, opens the NFC settings
+     */
+    public void checkNFCon () {
+        android.nfc.NfcAdapter mNfcAdapter= android.nfc.NfcAdapter.getDefaultAdapter(ControlActivity.this);
+        if (!mNfcAdapter.isEnabled()) {
+            AlertDialog.Builder alertbox = new AlertDialog.Builder(ControlActivity.this);
+            alertbox.setTitle("Enable NFC");
+            alertbox.setMessage("This app uses NFC to link your phone with the washer/dryer you're using, but we need to turn it on. To use NFC, just set the phone near the washiato device.");
+            alertbox.setPositiveButton("Turn On", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                        Intent intent = new Intent(Settings.ACTION_NFC_SETTINGS);
+                        startActivity(intent);
+                    } else {
+                        Intent intent = new Intent(Settings.ACTION_WIRELESS_SETTINGS);
+                        startActivity(intent);
+                    }
+                }
+            });
+            alertbox.setNegativeButton("Close", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    final AlertDialog.Builder noNFC = new AlertDialog.Builder(ControlActivity.this);
+                    noNFC.setMessage("That's fine! To link this phone manually, you'll need to enter the washer/dryer ID in the text box");
+                    noNFC.setNegativeButton("That's fine", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
                         }
-                    }
-                });
-                alertbox.setNegativeButton("Close", new DialogInterface.OnClickListener() {
-
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-
-                    }
-                });
-                alertbox.show();
-
-            }
+                    });
+                    noNFC.setPositiveButton("Turn NFC On", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                                Intent intent = new Intent(Settings.ACTION_NFC_SETTINGS);
+                                startActivity(intent);
+                            } else {
+                                Intent intent = new Intent(Settings.ACTION_WIRELESS_SETTINGS);
+                                startActivity(intent);
+                            }
+                        }
+                    });
+                    noNFC.show();
+                }
+            });
+            alertbox.show();
 
         }
-
     }
 
 
