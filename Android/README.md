@@ -14,8 +14,23 @@ Otherwise, check out [this](https://github.com/codepath/android_guides/wiki/Must
 
 ### 05/06/2016- Arya
 This is a basic barebones app template copied off of my smart bike code. Develop further! What it does:
+
 -Compiles and runs (LOL)
+
 -Registers a user with Firebase
+
 -Allows you to login via Firebase
+
 -Shows a silly laundry meme when you login. I'll play with it more to make it better, but this is what I currently have.
+
 ###NOTE: Not sure how Android Studio projects work with git (i.e. I don't know if you can see/open all files correctly. Let me know if you can't?).
+
+=================================================================================================
+
+### 05/09/2016- Arya
+This one reads NFC tags and displays serial number of each tag in Control Activity. 
+
+Files changed: ControlActivity.java, AndroidManifest.xml, content_control.xml
+
+Working on saving the NFC tag serial number to firebase for later querying.
+
