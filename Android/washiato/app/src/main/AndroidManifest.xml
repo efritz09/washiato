@@ -3,6 +3,7 @@
     package="arya.com.washiato">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.NFC" />
 
     <application
         android:name=".washiato"
