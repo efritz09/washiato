@@ -35,6 +35,7 @@ public class Login extends AppCompatActivity {
     public Firebase ref;
     final Context context = this; //Set context
     private static final String FIREBASE_URL = "https://washiato.firebaseio.com/";
+    private final String TAG = "LoginActivity";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
