@@ -3,6 +3,8 @@
     package="arya.com.washiato">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-feature android:name="android.hardware.nfc" android:required="true"/>
+    <uses-permission android:name="android.permission.NFC"/>
 
     <application
         android:name=".washiato"
@@ -28,7 +30,15 @@
         <activity
             android:name=".ControlActivity"
             android:label="@string/title_activity_control"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar">
+
+            <intent-filter>
+                <action android:name="android.nfc.action.TAG_DISCOVERED"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+            
+        </activity>
+
     </application>
 
 </manifest>
