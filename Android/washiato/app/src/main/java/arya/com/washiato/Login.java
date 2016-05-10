@@ -1,7 +1,10 @@
 package arya.com.washiato;
 
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -30,11 +33,19 @@ public class Login extends AppCompatActivity {
 
     //Declare module level object variables needed
     CheckBox checkbox;
-    EditText password;
+    static EditText password;
+    static EditText username;
     Button register;
+    String usernameHint;
+    String passwordHint;
     public Firebase ref;
+    private ProgressDialog mAuthProgressDialog;
+    private Firebase.AuthStateListener mAuthStateListener;
     final Context context = this; //Set context
     private static final String FIREBASE_URL = "https://washiato.firebaseio.com/";
+    private static SharedPreferences loginSettings;
+    private static SharedPreferences.Editor preferencesEditor;
+
     private final String TAG = "LoginActivity";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,22 +54,35 @@ public class Login extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        //check for local variables
+//        loginSettings = getPreferences(0); //get private preferences
+//        if(loginSettings.getBoolean("logged in",false)) {
+//            Log.i(TAG,"Logged in");
+//            Intent Successful_login = new Intent(Login.this, ControlActivity.class);
+//            startActivity(Successful_login);
+//            finish();
+//        } else Log.i(TAG,"not logged");
+
         //Create a reference to firebase database
         ref = new Firebase(FIREBASE_URL);
+        //set up the firebase connection progress dialog
+        mAuthProgressDialog = new ProgressDialog(this);
+        mAuthProgressDialog.setTitle("Loading");
+        mAuthProgressDialog.setMessage("Authenticating with Firebase...");
+        mAuthProgressDialog.setCancelable(false);
 
+        //set up register listener
         register = (Button) findViewById(R.id.register);
-
-        //Function implemented when register button is clicked
         register.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                Intent intentSignUP = new Intent(getApplicationContext(),
-                        SignUpActivity.class);
+                Intent intentSignUP = new Intent(getApplicationContext(),SignUpActivity.class);
                 startActivity(intentSignUP); //begin signup activity
             }
         });
 
         //Create an instance of EditText and link it to password from layout
         password = (EditText) findViewById(R.id.edit_password);
+        username = (EditText) findViewById(R.id.edit_name);
         //Create an instance of CheckBox and link it to checkbox from layout
         checkbox = (CheckBox) findViewById(R.id.ShowPwd);
 
@@ -79,58 +103,94 @@ public class Login extends AppCompatActivity {
         });
     }
 
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
+//
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//        // Handle action bar item clicks here. The action bar will
+//        // automatically handle clicks on the Home/Up button, so long
+//        // as you specify a parent activity in AndroidManifest.xml.
+//        int id = item.getItemId();
+//
+//        //noinspection SimplifiableIfStatement
+//        if (id == R.id.action_settings) {
+//            return true;
+//        }
+//
+//        return super.onOptionsItemSelected(item);
+//    }
 
     //Function implemented when Login button is pressed
     public void confirmLogin(View view) {
+        mAuthProgressDialog.show();
         final Intent intent = new Intent(this, ControlActivity.class);
 
         //Create new instances of EditTexts and link them to name and password from layout
-        EditText user_name = (EditText) findViewById(R.id.edit_name);
-        EditText password = (EditText) findViewById(R.id.edit_password);
+//        EditText username = (EditText) findViewById(R.id.edit_name);
+//        EditText password = (EditText) findViewById(R.id.edit_password);
 
         //Get strings entered as name and password
-        final String name = user_name.getText().toString();
+        final String name = username.getText().toString();
         final String pawd = password.getText().toString();
 
         //Authenticate using Firebase
         ref.authWithPassword(name, pawd, new Firebase.AuthResultHandler() {
             @Override
             public void onAuthenticated(AuthData authData) {
+                mAuthProgressDialog.hide();
                 Map<String, String> map = new HashMap<String, String>(); //hashmap of username and password
                 map.put("Password", pawd); //fill map
                 map.put("UserName", name);
                 ref.child("Users").child(authData.getUid()).setValue(map); //update firebase database
-                Toast toast = Toast.makeText(context, getString(R.string.success_ctrl_activity), Toast.LENGTH_LONG);
-                toast.show(); //show toast for successful login
+                Toast.makeText(context, getString(R.string.success_ctrl_activity), Toast.LENGTH_LONG).show(); //show toast for successful login
+
+                //store this user info in shared preferences
+
                 startActivity(intent); //start control activity
             }
 
             @Override
             public void onAuthenticationError(FirebaseError firebaseError) {
+                mAuthProgressDialog.hide();
                 Log.e("LaunchActivity", "Error logging in");
-                Toast toast = Toast.makeText(context, getString(R.string.fail), Toast.LENGTH_LONG);
-                toast.show(); //show toast for failed login
+                showErrorDialog(firebaseError.toString());
+                Toast.makeText(context, getString(R.string.fail), Toast.LENGTH_LONG).show(); //show toast for failed login
             }
         });
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    public void anonLogin(View view) {
+        mAuthProgressDialog.show();
+        final Intent intent = new Intent(this, ControlActivity.class);
+
+        ref.authAnonymously(new Firebase.AuthResultHandler() {
+            @Override
+            public void onAuthenticated(AuthData authData) {
+                mAuthProgressDialog.hide();
+                Log.i(TAG, "Anonymous authentication success");
+                startActivity(intent); //start control activity
+            }
+
+            @Override
+            public void onAuthenticationError(FirebaseError firebaseError) {
+                mAuthProgressDialog.hide();
+                Log.i(TAG, "Anonymous authentication failure");
+                showErrorDialog(firebaseError.toString());
+            }
+        });
     }
+
+    public static void populateUP(String user, String pass) {
+        username.setText(user);
+        password.setText(pass);
+    }
+
+    private void showErrorDialog(String message) {
+        new AlertDialog.Builder(this)
+                .setTitle("Error")
+                .setMessage(message)
+                .setPositiveButton(android.R.string.ok, null)
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .show();
+    }
+
 }

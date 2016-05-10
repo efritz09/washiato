@@ -9,8 +9,8 @@
         android:id="@+id/editTextUserName"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:hint="User Name" >
-
+        android:hint="User Name"
+        android:singleLine="true" >
         <requestFocus />
     </EditText>
 
@@ -19,14 +19,16 @@
         android:layout_width="fill_parent"
         android:layout_height="50dp"
         android:hint="Password"
-        android:inputType="textPassword" />
+        android:inputType="textPassword"
+        android:singleLine="true" />
 
     <EditText
         android:id="@+id/editTextConfirmPassword"
         android:layout_width="fill_parent"
         android:layout_height="50dp"
         android:hint="Confirm Password"
-        android:inputType="textPassword" />
+        android:inputType="textPassword"
+        android:singleLine="true" />
 
     <Button
         android:id="@+id/buttonCreateAccount"

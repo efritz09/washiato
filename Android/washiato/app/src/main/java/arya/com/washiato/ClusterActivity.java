@@ -8,6 +8,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 
 public class ClusterActivity extends AppCompatActivity {
+    private final String TAG = "ClusterActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

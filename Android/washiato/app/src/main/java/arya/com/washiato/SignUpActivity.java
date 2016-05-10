@@ -1,5 +1,6 @@
 package arya.com.washiato;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -48,56 +49,50 @@ public class SignUpActivity extends AppCompatActivity {
 
             public void onClick(View v) {
 
-                final String userName = editTextUserName.getText().toString();
+                final String username = editTextUserName.getText().toString();
                 final String password = editTextPassword.getText().toString();
-                String confirmPassword = editTextConfirmPassword.getText()
-                        .toString();
+                String confirmPassword = editTextConfirmPassword.getText().toString();
 
-                if (userName.equals("") || password.equals("")
-                        || confirmPassword.equals("")) { //if username and password are blank
-
-                    Toast.makeText(getApplicationContext(), "Field Vacant",
-                            Toast.LENGTH_LONG).show();
+                if (username.equals("") || password.equals("") || confirmPassword.equals("")) { //if username and password are blank
+                    Toast.makeText(getApplicationContext(), "Field Vacant",Toast.LENGTH_LONG).show();
                     return;
                 }
                 if (!password.equals(confirmPassword)) {
                     //if password input does not match password entered in confirm password
-                    Toast.makeText(getApplicationContext(),
-                            "Password does not match", Toast.LENGTH_LONG)
-                            .show();
+                    Toast.makeText(getApplicationContext(), "Password does not match", Toast.LENGTH_LONG).show();
                     return;
                 } else {
                     //if username is unique, proceed with adding entry to database
-                    ref.createUser(userName, password, new Firebase.ValueResultHandler<Map<String, Object>>() {
+                    ref.createUser(username, password, new Firebase.ValueResultHandler<Map<String, Object>>() {
                         @Override
                         public void onSuccess(Map<String, Object> result) {
-                            Log.i("SignUpActivity", "Successful signup");
+                            Log.i(TAG, "Successful signup");
                             Toast.makeText(getApplicationContext(), "Account Successfully Created!", Toast.LENGTH_LONG).show();
+                            Intent i = new Intent(SignUpActivity.this,Login.class);
+                            startActivity(i); //go back to launch activity
+                            Login.populateUP(username,password);
+                            finish();
                         }
 
                         @Override
                         public void onError(FirebaseError firebaseError) {
-                            Log.i("SignUpActivity", "Erroneous signup");
-                            Toast.makeText(getApplicationContext(), "Account already exists. Try again", Toast.LENGTH_LONG).show();
-                            Intent i = new Intent(SignUpActivity.this,
-                                    Login.class);
-                            startActivity(i); //go back to Launch activity if username repeated
-                            finish();
+                            Log.i(TAG, "username exists");
+                            showErrorDialog(firebaseError.toString());
                         }
                     });
-                    Intent i = new Intent(SignUpActivity.this,
-                            Login.class);
-                    startActivity(i); //go back to launch activity
-                    finish();
+
                 }
             }
         });
     }
 
-    @Override
-    protected void onDestroy() {
-        // TODO Auto-generated method stub
-        super.onDestroy();
+    private void showErrorDialog(String message) {
+        new AlertDialog.Builder(this)
+                .setTitle("Error")
+                .setMessage(message)
+                .setPositiveButton(android.R.string.ok, null)
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .show();
     }
 
 }

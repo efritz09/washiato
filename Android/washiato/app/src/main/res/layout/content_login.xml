@@ -73,5 +73,13 @@
         android:layout_below="@+id/button_login"
         android:layout_alignStart="@+id/button_login" />
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/button_guest_login"
+        android:onClick="anonLogin"
+        android:layout_below="@id/register"
+        android:layout_centerHorizontal="true"/>
+
 </RelativeLayout>
 

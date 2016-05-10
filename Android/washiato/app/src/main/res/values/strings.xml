@@ -1,18 +1,22 @@
 <resources>
     <string name="app_name">washiato</string>
     <string name="action_settings">Settings</string>
+    <string name="title_activity_sign_up">SignUpActivity</string>
+    <string name="title_activity_control">ControlActivity</string>
+    <string name="title_activity_cluster">ClusterActivity</string>
 
     <string name="editText_username">User Name</string>
     <string name="editText_password">Password</string>
 
     <string name="button_confirm_login">Login</string>
+    <string name="button_register">Sign Up</string>
+
     <string name="show_password">Show Password</string>
     <string name="hide_password">Hide Password</string>
-    <string name="button_register">Sign Up</string>
-    <string name="title_activity_sign_up">SignUpActivity</string>
     <string name="success_ctrl_activity">Success! Control Activity Launched</string>
     <string name="fail">Authentication failed</string>
-    <string name="title_activity_control">ControlActivity</string>
-    <string name="title_activity_cluster">ClusterActivity</string>
+    <string name="alert_nfc_on_message">This app uses NFC to link your phone with the washer/dryer you\'re using, but we need to turn it on. To use NFC, just set the phone near the washiato device.</string>
+    <string name="alert_nfc_on_message_repeat">That\'s fine! To link this phone manually, you\'ll need to enter the washer/dryer ID in the text box</string>
+    <string name="button_guest_login">Continue as Guest</string>
 
 </resources>
