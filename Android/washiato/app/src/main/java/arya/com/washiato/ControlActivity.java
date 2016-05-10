@@ -29,9 +29,11 @@ import android.nfc.tech.NfcV;
 import android.view.View;
 import android.widget.TextView;
 
+import com.firebase.client.AuthData;
 import com.firebase.client.Firebase;
 
 public class ControlActivity extends AppCompatActivity {
+
     // list of NFC technologies detected:
     private final String[][] techList = new String[][] {
             new String[] {
@@ -56,6 +58,7 @@ public class ControlActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        //Create a reference to firebase database
         ref = new Firebase(FIREBASE_URL);
 
         checkPermissions(this); //check the permissions
@@ -84,6 +87,7 @@ public class ControlActivity extends AppCompatActivity {
 
     }
 
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -110,9 +114,18 @@ public class ControlActivity extends AppCompatActivity {
     @Override
     protected void onNewIntent(Intent intent) {
         if (intent.getAction().equals(NfcAdapter.ACTION_TAG_DISCOVERED)) {
-            ((TextView)findViewById(R.id.text)).setText("NFC Tag\n" + ByteArrayToHexString(intent.getByteArrayExtra(NfcAdapter.EXTRA_ID)));
+            //Get serial number from NFC tag and convert to String
+            String serial = ByteArrayToHexString(intent.getByteArrayExtra(NfcAdapter.EXTRA_ID));
+            //Display NFC serial number
+            ((TextView)findViewById(R.id.text)).setText("NFC Tag\n" + serial);
+
+            //Access AuthData object created during login
+            AuthData authData = ref.getAuth();
+            //Push to Firebase (temporarily)
+            ref.child("Users").child(authData.getUid()).child("Washer NFC Serial").setValue(serial);
         }
     }
+
 
 
     public void logOut(View view) {
@@ -203,9 +216,9 @@ public class ControlActivity extends AppCompatActivity {
     }
 
     public void launchNFC(View view) {
-        Log.i(TAG,"resetting NFC settings");
+        Log.i(TAG, "resetting NFC settings");
         washiato.preferencesEditor = washiato.preferences.edit();
-        washiato.preferencesEditor.putBoolean(getString(R.string.pref_nfc),false);
+        washiato.preferencesEditor.putBoolean(getString(R.string.pref_nfc), false);
         washiato.preferencesEditor.apply();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             Intent intent = new Intent(Settings.ACTION_NFC_SETTINGS);
@@ -216,6 +229,7 @@ public class ControlActivity extends AppCompatActivity {
         }
     }
 
+    //There might be a better way to convert to string in java if anyone wants to change this function
     private String ByteArrayToHexString(byte [] inarray) {
         int i, j, in;
         String [] hex = {"0","1","2","3","4","5","6","7","8","9","A","B","C","D","E","F"};

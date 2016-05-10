@@ -23,14 +23,13 @@ This is a basic barebones app template copied off of my smart bike code. Develop
 
 -Shows a silly laundry meme when you login. I'll play with it more to make it better, but this is what I currently have.
 
-###NOTE: Not sure how Android Studio projects work with git (i.e. I don't know if you can see/open all files correctly. Let me know if you can't?).
 
 =================================================================================================
 
 ### 05/09/2016- Arya
-This one reads NFC tags and displays serial number of each tag in Control Activity. 
+This one reads NFC tags and displays serial number of each tag in Control Activity; also pushes the serial number to Firebase (another child under user uid). FYI, if you try a different NFC tag after, it updates the serial number in Firebase and on screen.
 
 Files changed: ControlActivity.java, AndroidManifest.xml, content_control.xml
 
-Working on saving the NFC tag serial number to firebase for later querying.
+Working on how to destroy the serial number data after a washing cycle is complete (because if another user uses it afterward, the old user might still keep seeing time remaining, etc?).
 

@@ -115,7 +115,7 @@ public class Login extends AppCompatActivity {
                 map.put("Password", pawd); //fill map
                 map.put("UserName", name);
                 ref.child("Users").child(authData.getUid()).setValue(map); //update firebase database
-                Toast.makeText(context, getString(R.string.success_ctrl_activity), Toast.LENGTH_LONG).show(); //show toast for successful login
+//                Toast.makeText(context, getString(R.string.success_ctrl_activity), Toast.LENGTH_LONG).show(); //show toast for successful login
 
                 //store this user info in shared preferences
                 washiato.preferencesEditor = washiato.preferences.edit();
@@ -132,7 +132,7 @@ public class Login extends AppCompatActivity {
                 mAuthProgressDialog.hide();
                 Log.e("LaunchActivity", "Error logging in");
                 showErrorDialog(firebaseError.toString());
-                Toast.makeText(context, getString(R.string.fail), Toast.LENGTH_LONG).show(); //show toast for failed login
+//                Toast.makeText(context, getString(R.string.fail), Toast.LENGTH_LONG).show(); //show toast for failed login
             }
         });
     }
