@@ -4,18 +4,13 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
 import android.view.View;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -30,23 +25,19 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Login extends AppCompatActivity {
-
     //Declare module level object variables needed
     CheckBox checkbox;
-    static EditText password;
-    static EditText username;
+    public static EditText password;
+    public static EditText username;
     Button register;
-    String usernameHint;
-    String passwordHint;
     public Firebase ref;
+    private static final String FIREBASE_URL = "https://washiato.firebaseio.com/";
     private ProgressDialog mAuthProgressDialog;
     private Firebase.AuthStateListener mAuthStateListener;
     final Context context = this; //Set context
-    private static final String FIREBASE_URL = "https://washiato.firebaseio.com/";
-    private static SharedPreferences loginSettings;
-    private static SharedPreferences.Editor preferencesEditor;
 
     private final String TAG = "LoginActivity";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,14 +45,16 @@ public class Login extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        //check for local variables
-//        loginSettings = getPreferences(0); //get private preferences
-//        if(loginSettings.getBoolean("logged in",false)) {
-//            Log.i(TAG,"Logged in");
-//            Intent Successful_login = new Intent(Login.this, ControlActivity.class);
-//            startActivity(Successful_login);
-//            finish();
-//        } else Log.i(TAG,"not logged");
+        createMachines();
+
+        //
+        washiato.preferences = getPreferences(0); //get private preferences
+        if(washiato.preferences.getBoolean(getString(R.string.pref_logged_in),false)) {
+            Log.i(TAG,"Logged in");
+            Intent Successful_login = new Intent(Login.this, ControlActivity.class);
+            startActivity(Successful_login);
+            finish();
+        } else Log.i(TAG,"not logged");
 
         //Create a reference to firebase database
         ref = new Firebase(FIREBASE_URL);
@@ -103,30 +96,11 @@ public class Login extends AppCompatActivity {
         });
     }
 
-//
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        // Handle action bar item clicks here. The action bar will
-//        // automatically handle clicks on the Home/Up button, so long
-//        // as you specify a parent activity in AndroidManifest.xml.
-//        int id = item.getItemId();
-//
-//        //noinspection SimplifiableIfStatement
-//        if (id == R.id.action_settings) {
-//            return true;
-//        }
-//
-//        return super.onOptionsItemSelected(item);
-//    }
 
     //Function implemented when Login button is pressed
     public void confirmLogin(View view) {
         mAuthProgressDialog.show();
         final Intent intent = new Intent(this, ControlActivity.class);
-
-        //Create new instances of EditTexts and link them to name and password from layout
-//        EditText username = (EditText) findViewById(R.id.edit_name);
-//        EditText password = (EditText) findViewById(R.id.edit_password);
 
         //Get strings entered as name and password
         final String name = username.getText().toString();
@@ -144,8 +118,13 @@ public class Login extends AppCompatActivity {
                 Toast.makeText(context, getString(R.string.success_ctrl_activity), Toast.LENGTH_LONG).show(); //show toast for successful login
 
                 //store this user info in shared preferences
+                washiato.preferencesEditor = washiato.preferences.edit();
+                washiato.preferencesEditor.putBoolean(getString(R.string.pref_logged_in), true);
+                washiato.preferencesEditor.putString(getString(R.string.pref_user_id), authData.getUid());
+                washiato.preferencesEditor.apply();
 
                 startActivity(intent); //start control activity
+                finish();
             }
 
             @Override
@@ -166,23 +145,19 @@ public class Login extends AppCompatActivity {
             @Override
             public void onAuthenticated(AuthData authData) {
                 mAuthProgressDialog.hide();
-                Log.i(TAG, "Anonymous authentication success");
+//                Log.i(TAG, "Anonymous authentication success");
                 startActivity(intent); //start control activity
             }
 
             @Override
             public void onAuthenticationError(FirebaseError firebaseError) {
                 mAuthProgressDialog.hide();
-                Log.i(TAG, "Anonymous authentication failure");
+//                Log.i(TAG, "Anonymous authentication failure");
                 showErrorDialog(firebaseError.toString());
             }
         });
     }
 
-    public static void populateUP(String user, String pass) {
-        username.setText(user);
-        password.setText(pass);
-    }
 
     private void showErrorDialog(String message) {
         new AlertDialog.Builder(this)
@@ -191,6 +166,10 @@ public class Login extends AppCompatActivity {
                 .setPositiveButton(android.R.string.ok, null)
                 .setIcon(android.R.drawable.ic_dialog_alert)
                 .show();
+    }
+
+    private void createMachines() {
+        Log.i(TAG,"create the machines in firebase");
     }
 
 }

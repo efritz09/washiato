@@ -68,9 +68,8 @@ public class SignUpActivity extends AppCompatActivity {
                         public void onSuccess(Map<String, Object> result) {
                             Log.i(TAG, "Successful signup");
                             Toast.makeText(getApplicationContext(), "Account Successfully Created!", Toast.LENGTH_LONG).show();
-                            Intent i = new Intent(SignUpActivity.this,Login.class);
-                            startActivity(i); //go back to launch activity
-                            Login.populateUP(username,password);
+                            Login.username.setText(username);
+                            Login.password.setText(password);
                             finish();
                         }
 

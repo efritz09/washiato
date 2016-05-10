@@ -26,7 +26,10 @@ import android.nfc.tech.NfcA;
 import android.nfc.tech.NfcB;
 import android.nfc.tech.NfcF;
 import android.nfc.tech.NfcV;
+import android.view.View;
 import android.widget.TextView;
+
+import com.firebase.client.Firebase;
 
 public class ControlActivity extends AppCompatActivity {
     // list of NFC technologies detected:
@@ -41,6 +44,8 @@ public class ControlActivity extends AppCompatActivity {
                     MifareUltralight.class.getName(), Ndef.class.getName()
             }
     };
+    public Firebase ref;
+    private static final String FIREBASE_URL = "https://washiato.firebaseio.com/";
     private final int MY_PERMISSIONS_REQUEST_LOCATION = 0;
     private final String TAG = "ControlActivity";
 
@@ -51,8 +56,15 @@ public class ControlActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        ref = new Firebase(FIREBASE_URL);
+
         checkPermissions(this); //check the permissions
-        checkNFCon(); //check to see if NFC is on
+
+        //check to see if we should ask about NFC
+        if(!washiato.preferences.getBoolean(getString(R.string.pref_nfc),false)) {
+            Log.i(TAG, "asking about NFC");
+            checkNFCon(); //check to see if NFC is on
+        }
 
     }
 
@@ -102,6 +114,20 @@ public class ControlActivity extends AppCompatActivity {
         }
     }
 
+
+    public void logOut(View view) {
+        //log the user out
+        washiato.preferencesEditor = washiato.preferences.edit();
+        washiato.preferencesEditor.putBoolean(getString(R.string.pref_logged_in),false);
+        washiato.preferencesEditor.putString(getString(R.string.pref_user_id), null);
+        washiato.preferencesEditor.commit();
+        ref.unauth();
+        Log.i(TAG,"logging out...");
+        //open the login screen
+        Intent intent = new Intent(this, Login.class);
+        startActivity(intent);
+        finish();
+    }
 
     public void checkPermissions( Activity thisActivity) {
         // Here, thisActivity is the current activity, maybe in case we need to call this from other activities
@@ -160,11 +186,33 @@ public class ControlActivity extends AppCompatActivity {
                             }
                         }
                     });
+                    noNFC.setNeutralButton("Don't show this again", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            washiato.preferencesEditor = washiato.preferences.edit();
+                            washiato.preferencesEditor.putBoolean(getString(R.string.pref_nfc),true);
+                            washiato.preferencesEditor.apply();
+                        }
+                    });
                     noNFC.show();
                 }
             });
             alertbox.show();
 
+        }
+    }
+
+    public void launchNFC(View view) {
+        Log.i(TAG,"resetting NFC settings");
+        washiato.preferencesEditor = washiato.preferences.edit();
+        washiato.preferencesEditor.putBoolean(getString(R.string.pref_nfc),false);
+        washiato.preferencesEditor.apply();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            Intent intent = new Intent(Settings.ACTION_NFC_SETTINGS);
+            startActivity(intent);
+        } else {
+            Intent intent = new Intent(Settings.ACTION_WIRELESS_SETTINGS);
+            startActivity(intent);
         }
     }
 

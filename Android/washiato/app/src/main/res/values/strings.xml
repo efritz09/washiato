@@ -18,5 +18,8 @@
     <string name="alert_nfc_on_message">This app uses NFC to link your phone with the washer/dryer you\'re using, but we need to turn it on. To use NFC, just set the phone near the washiato device.</string>
     <string name="alert_nfc_on_message_repeat">That\'s fine! To link this phone manually, you\'ll need to enter the washer/dryer ID in the text box</string>
     <string name="button_guest_login">Continue as Guest</string>
+    <string name="pref_logged_in">LOGGED_IN_STATUS</string>
+    <string name="pref_user_id">USER_ID</string>
+    <string name="pref_nfc">DONT_USE_NFC</string>
 
 </resources>
