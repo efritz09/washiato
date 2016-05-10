@@ -1,40 +1,79 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:showIn="@layout/activity_control">
 
-    <!--ImageView
-        android:id="@+id/delete_image"
-        android:src="@drawable/laundry"
-        android:layout_gravity="center_horizontal"
-        android:layout_width="300dp"
-        android:layout_height="300dp"
-        android:paddingTop="50dp"/-->
-
     <TextView
-        android:id="@+id/text"
+        android:id="@+id/text_user"
+        android:text="username"
+        android:textAppearance="?android:attr/textAppearanceLarge"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="70dp"/>
+        android:layout_marginTop="70dp"
+        android:layout_marginLeft="10dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:id="@+id/text_cluster"
+        android:text="local cluster"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/text_user"
+        android:layout_alignStart="@+id/text_user" />
+
+    <TextView
+        android:id="@+id/text_machine_status"
+        android:text="machine status"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/text_cluster"
+        android:layout_alignStart="@id/text_user" />
+
+    <TextView
+        android:id="@+id/text_nfc_serial"
+        android:text="nfc results"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="100dp"
+        android:layout_below="@id/text_machine_status"
+        android:layout_alignStart="@id/text_user" />
+
+    <Button
+        android:id="@+id/button_cluster"
+        android:text="Cluster"
+        android:layout_alignStart="@id/text_user"
+        android:layout_below="@id/text_machine_status"
+        android:layout_marginTop="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="launchCluster"/>
 
     <Button
         android:id="@+id/button_logout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Log out"
-        android:onClick="logOut"/>
+        android:onClick="logOut"
+        android:layout_alignTop="@+id/button_nfc"
+        android:layout_alignStart="@id/text_user"/>
 
     <Button
         android:id="@+id/button_nfc"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Turn on NFC"
-        android:onClick="launchNFC"/>
+        android:onClick="launchNFC"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="30dp" />
 
 
-</LinearLayout>
+</RelativeLayout>

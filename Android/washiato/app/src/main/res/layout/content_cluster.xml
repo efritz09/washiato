@@ -5,5 +5,38 @@
     android:layout_height="match_parent">
 
 
+    <TextView
+        android:id="@+id/text_cluster_name"
+        android:text="This Cluster Name"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/text_cluster_location"
+        android:text="This Cluster Location"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:layout_alignStart="@id/text_cluster_name"
+        android:layout_below="@id/text_cluster_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/text_cluster_washers_available"
+        android:text="This Cluster washers available"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:layout_alignStart="@id/text_cluster_name"
+        android:layout_below="@id/text_cluster_location"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/text_cluster_dryers_available"
+        android:text="This Cluster dryers available"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:layout_alignStart="@id/text_cluster_name"
+        android:layout_below="@id/text_cluster_washers_available"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
 
 </RelativeLayout>

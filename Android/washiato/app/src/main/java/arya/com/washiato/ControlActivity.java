@@ -126,6 +126,11 @@ public class ControlActivity extends AppCompatActivity {
         }
     }
 
+    public void launchCluster(View view) {
+        Log.i(TAG,"starting cluster activity");
+        Intent intent = new Intent(this, ClusterActivity.class);
+        startActivity(intent);
+    }
 
 
     public void logOut(View view) {
