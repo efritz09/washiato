@@ -10,6 +10,8 @@ Since Adriano says we need to use 2 more libraries, here's a short list of some 
 
 Otherwise, check out [this](https://github.com/codepath/android_guides/wiki/Must-Have-Libraries) for more libraries. There's a huge list that's split up into categories at the bottom.
 
+=================================================================================================
+
 ### 05/10/2016- Eric
 The login appears to be finished. It has memory so we don't need to login every time. Guest login works. If we register a new person, the login screen autopopulates it with the new user's credentials. 
 
