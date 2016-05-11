@@ -117,7 +117,7 @@ public class ControlActivity extends AppCompatActivity {
             //Get serial number from NFC tag and convert to String
             String serial = ByteArrayToHexString(intent.getByteArrayExtra(NfcAdapter.EXTRA_ID));
             //Display NFC serial number
-            ((TextView)findViewById(R.id.text)).setText("NFC Tag\n" + serial);
+            ((TextView)findViewById(R.id.text_nfc_serial)).setText("NFC Tag\n" + serial);
 
             //Access AuthData object created during login
             AuthData authData = ref.getAuth();
