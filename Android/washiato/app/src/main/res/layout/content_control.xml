@@ -75,5 +75,15 @@
         android:layout_marginEnd="10dp"
         android:layout_marginBottom="30dp" />
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/show_notification"
+        android:id="@+id/button"
+        android:onClick="showNotificationClicked"
+        android:layout_alignBaseline="@+id/button_logout"
+        android:layout_alignBottom="@+id/button_logout"
+        android:layout_toEndOf="@+id/button_logout" />
+
 
 </RelativeLayout>
