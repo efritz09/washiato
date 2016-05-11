@@ -21,5 +21,6 @@
     <string name="pref_logged_in">LOGGED_IN_STATUS</string>
     <string name="pref_user_id">USER_ID</string>
     <string name="pref_nfc">DONT_USE_NFC</string>
+    <string name="washiato_splash_image">washiato splash image</string>
 
 </resources>
