@@ -6,7 +6,7 @@
 #include <ESP8266WiFi.h>
 #include <FirebaseArduino.h>
 
-const char* ssid     = "Stanford Residences";
+const char* ssid     = "Stanford";
 const char* password = "yourpassword";
 
 void setup() {

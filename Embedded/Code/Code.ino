@@ -5,6 +5,7 @@
 #include <ESP8266WiFi.h>
 #include <FirebaseArduino.h>
 #include "ESP8266_MMA8452Q.h"
+#include <Arduino.h>
 
 #define DOOR_PIN 16
 
@@ -12,11 +13,14 @@
 #define MACHINE_WASHING 1
 #define MACHINE_FINISHED 2
 
-#define Window_Samples 200
+#define Window_Samples 1000
 #define UPPER_ACCEL_THRESHOLD 1200
 #define LOWER_ACCEL_THRESHOLD 800
 
-const char* ssid = "Stanford Residences";
+//const char* ssid = "Stanford Residences";
+
+const char* ssid = "AdriAndroid";
+
 static String MAC_address = "";
 static int MachineState = MACHINE_UNOCCUPIED;
 MMA8452Q accel;
@@ -132,6 +136,8 @@ bool checkMovement(void) {
 
   // decide whether we are moving
   bool isMoving = ((x_s>Accel_Var_Threshold) || (y_s>Accel_Var_Threshold) || (z_s>Accel_Var_Threshold));
+
+  //Serial.println(max(x_s, max(y_s, z_s)));
 
   // Introduce software hysteresis so we don't flip back and forth
   if (isMoving) {
