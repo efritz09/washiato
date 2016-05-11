@@ -41,15 +41,15 @@
             android:layout_centerVertical="true" />
 
 
-<!--        <ImageView
+        <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/laundry"
+            android:src="@mipmap/washer"
             android:layout_gravity="right|top"
             android:layout_alignParentTop="true"
             android:layout_alignParentRight="true"
             android:id="@+id/imageView"
-            android:contentDescription="@string/expanded_image" />-->
+            android:contentDescription="@string/expanded_image" />
     </RelativeLayout>
 
 

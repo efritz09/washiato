@@ -120,6 +120,14 @@ public class ControlActivity extends AppCompatActivity {
 
     @Override
     protected void onNewIntent(Intent intent) {
+        if(intent == null) {
+            Log.i(TAG,"the intent is null somehow");
+            return;
+        }
+        else if(intent.getAction() == null) {
+            Log.i(TAG,"the intent.getAction() is null");
+            return;
+        }
         if (intent.getAction().equals(NfcAdapter.ACTION_TAG_DISCOVERED)) {
             //Get serial number from NFC tag and convert to String
             String serial = ByteArrayToHexString(intent.getByteArrayExtra(NfcAdapter.EXTRA_ID));
@@ -130,6 +138,7 @@ public class ControlActivity extends AppCompatActivity {
             AuthData authData = ref.getAuth();
             //Push to Firebase (temporarily)
             ref.child("Users").child(authData.getUid()).child("Washer NFC Serial").setValue(serial);
+            createNotification();
         }
     }
 
@@ -282,16 +291,20 @@ public class ControlActivity extends AppCompatActivity {
         builder.setTicker(getResources().getString(R.string.custom_notification));
 
         // Sets the small icon for the ticker
-        builder.setSmallIcon(R.drawable.laundry);
+        builder.setSmallIcon(R.mipmap.washer);
         // END_INCLUDE(ticker)
 
         // BEGIN_INCLUDE(buildNotification)
         // Cancel the notification when clicked
         builder.setAutoCancel(true);
 
+
         // Build the notification
         Notification notification = builder.build();
         // END_INCLUDE(buildNotification)
+
+        //THIS MIGHT MAKE IT A HEADS UP NOTIFICATION BUT I DONT KNOW
+        notification.priority = Notification.PRIORITY_HIGH;
 
         // BEGIN_INCLUDE(customLayout)
         // Inflate the notification layout as RemoteViews
@@ -327,7 +340,5 @@ public class ControlActivity extends AppCompatActivity {
         nm.notify(0, notification);
         // END_INCLUDE(notify)
     }
-
-
 
 }
