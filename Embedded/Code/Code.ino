@@ -17,9 +17,9 @@
 #define UPPER_ACCEL_THRESHOLD 1200
 #define LOWER_ACCEL_THRESHOLD 800
 
-//const char* ssid = "Stanford Residences";
+const char* ssid = "Stanford Residences";
 
-const char* ssid = "AdriAndroid";
+//const char* ssid = "AdriAndroid";
 
 static String MAC_address = "";
 static int MachineState = MACHINE_UNOCCUPIED;
@@ -65,7 +65,7 @@ void setup() {
   Serial.println("Firebase Successfully Initialized");
   
   // Set up accelerometer object
-  accel.init(SCALE_2G, ODR_200);
+  accel.init(SCALE_2G, ODR_800);
   Serial.println("Accelerometer Successfully Initialized");
 
   setFBStatus(MACHINE_UNOCCUPIED);
@@ -132,12 +132,17 @@ bool checkMovement(void) {
     z_mu = z_mu - (z_mu/Window_Samples) + (new_z/Window_Samples);
     z_s = z_s - (z_s/(Window_Samples)) + (sq(new_z-z_mu)/(Window_Samples));
     //Serial.println(x_s);
+
+    Serial.print((String)sq(new_x-x_mu) + "\t");
+    Serial.print((String)sq(new_y-y_mu) + "\t");
+    Serial.print((String)sq(new_z-z_mu) + "\t");
+
+    Serial.println(sqrt(sq(x_s)+sq(y_s)+sq(z_s)));
+    
   }
 
   // decide whether we are moving
   bool isMoving = ((x_s>Accel_Var_Threshold) || (y_s>Accel_Var_Threshold) || (z_s>Accel_Var_Threshold));
-
-  //Serial.println(max(x_s, max(y_s, z_s)));
 
   // Introduce software hysteresis so we don't flip back and forth
   if (isMoving) {
