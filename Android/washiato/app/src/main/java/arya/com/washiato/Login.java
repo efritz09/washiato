@@ -170,6 +170,16 @@ public class Login extends AppCompatActivity {
 
     private void createMachines() {
         Log.i(TAG,"create the machines in firebase");
+        Machine mach1 = new Machine("Apollo","Olympus","DEADBEEF",0,true);
+        Machine mach2 = new Machine("Athena","Olympus","12345678",2,false);
+        Machine mach3 = new Machine("Thor","Valhalla","666EF666",3,true);
+        Machine mach4 = new Machine("Odin","Valhalla","666AB666",2,false);
+
+        ref.child("Machines").child("DEADBEEF").setValue(mach1);
+        ref.child("Machines").child("12345678").setValue(mach2);
+        ref.child("Machines").child("666EF666").setValue(mach3);
+        ref.child("Machines").child("666AB666").setValue(mach4);
+
     }
 
 }

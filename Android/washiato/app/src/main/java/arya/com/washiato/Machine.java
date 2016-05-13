@@ -7,6 +7,7 @@ public class Machine {
     String name;
     String localCluster;
     String serialNumber;
+    int status;
     boolean washer;
 
 
@@ -14,10 +15,11 @@ public class Machine {
 
     }
 
-    public Machine(String name, String localCluster, String serialNumber, boolean washer) {
+    public Machine(String name, String localCluster, String serialNumber, int status, boolean washer) {
         this.name = name;
         this.localCluster = localCluster;
         this.serialNumber = serialNumber;
+        this.status = status;
         this.washer = washer;
     }
 
@@ -33,6 +35,9 @@ public class Machine {
     public boolean getWasher() {
         return this.washer;
     }
+    public int getStatus() {
+        return this.status;
+    }
 
     public void setName(String name) {
         this.name = name;
@@ -45,6 +50,9 @@ public class Machine {
     }
     public void setWasher(boolean washer) {
         this.washer = washer;
+    }
+    public void setStatus(int status) {
+        this.status = status;
     }
 
 }
