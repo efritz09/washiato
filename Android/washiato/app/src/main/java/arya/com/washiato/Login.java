@@ -21,6 +21,7 @@ import com.firebase.client.AuthData;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -45,8 +46,6 @@ public class Login extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        createMachines();
-
         //
         washiato.preferences = getPreferences(0); //get private preferences
         if(washiato.preferences.getBoolean(getString(R.string.pref_logged_in),false)) {
@@ -58,6 +57,7 @@ public class Login extends AppCompatActivity {
 
         //Create a reference to firebase database
         ref = new Firebase(FIREBASE_URL);
+        createMachines();
         //set up the firebase connection progress dialog
         mAuthProgressDialog = new ProgressDialog(this);
         mAuthProgressDialog.setTitle("Loading");
@@ -170,16 +170,29 @@ public class Login extends AppCompatActivity {
 
     private void createMachines() {
         Log.i(TAG,"create the machines in firebase");
-        Machine mach1 = new Machine("Apollo","Olympus","DEADBEEF",0,true);
-        Machine mach2 = new Machine("Athena","Olympus","12345678",2,false);
-        Machine mach3 = new Machine("Thor","Valhalla","666EF666",3,true);
-        Machine mach4 = new Machine("Odin","Valhalla","666AB666",2,false);
+        Machine mach1 = new Machine("Apollo","Olympus",0,true);
+        Machine mach2 = new Machine("Athena","Olympus",2,false);
+        Machine mach3 = new Machine("Thor","Valhalla",3,true);
+        Machine mach4 = new Machine("Odin","Valhalla",2,false);
 
         ref.child("Machines").child("DEADBEEF").setValue(mach1);
         ref.child("Machines").child("12345678").setValue(mach2);
         ref.child("Machines").child("666EF666").setValue(mach3);
         ref.child("Machines").child("666AB666").setValue(mach4);
 
+        ArrayList<String> mach_array = new ArrayList<String>();
+        mach_array.add("Apollo");
+        mach_array.add("Athena");
+
+        ArrayList<String> mach_array2 = new ArrayList<String>();
+        mach_array2.add("Thor");
+        mach_array2.add("Odin");
+
+        Cluster clus1 = new Cluster("Rains 218", 10, 6, mach_array);
+        Cluster clus2 = new Cluster("Rains 217", 15, 8, mach_array2);
+
+        ref.child("Clusters").child("Olympus").setValue(clus1);
+        ref.child("Clusters").child("Valhalla").setValue(clus2);
     }
 
 }

@@ -6,7 +6,6 @@ package arya.com.washiato;
 public class Machine {
     String name;
     String localCluster;
-    String serialNumber;
     int status;
     boolean washer;
 
@@ -15,10 +14,9 @@ public class Machine {
 
     }
 
-    public Machine(String name, String localCluster, String serialNumber, int status, boolean washer) {
+    public Machine(String name, String localCluster, int status, boolean washer) {
         this.name = name;
         this.localCluster = localCluster;
-        this.serialNumber = serialNumber;
         this.status = status;
         this.washer = washer;
     }
@@ -28,9 +26,6 @@ public class Machine {
     }
     public String getLocalCluster() {
         return this.localCluster;
-    }
-    public String getSerialNumber() {
-        return this.serialNumber;
     }
     public boolean getWasher() {
         return this.washer;
@@ -44,9 +39,6 @@ public class Machine {
     }
     public void setLocalCluster(String localCluster) {
         this.localCluster = localCluster;
-    }
-    public void setSerialNumber(String serialNumber) {
-        this.serialNumber = serialNumber;
     }
     public void setWasher(boolean washer) {
         this.washer = washer;
