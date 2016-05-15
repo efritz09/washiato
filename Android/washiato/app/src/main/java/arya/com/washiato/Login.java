@@ -111,10 +111,10 @@ public class Login extends AppCompatActivity {
             @Override
             public void onAuthenticated(AuthData authData) {
                 mAuthProgressDialog.hide();
-                Map<String, String> map = new HashMap<String, String>(); //hashmap of username and password
+                Map<String, Object> map = new HashMap<String, Object>(); //hashmap of username and password
                 map.put("Password", pawd); //fill map
                 map.put("UserName", name);
-                ref.child("Users").child(authData.getUid()).setValue(map); //update firebase database
+                ref.child("Users").child(authData.getUid()).updateChildren(map); //update firebase database
 //                Toast.makeText(context, getString(R.string.success_ctrl_activity), Toast.LENGTH_LONG).show(); //show toast for successful login
 
                 //store this user info in shared preferences
@@ -122,6 +122,8 @@ public class Login extends AppCompatActivity {
                 washiato.preferencesEditor.putBoolean(getString(R.string.pref_logged_in), true);
                 washiato.preferencesEditor.putString(getString(R.string.pref_user_id), authData.getUid());
                 washiato.preferencesEditor.apply();
+
+
 
                 startActivity(intent); //start control activity
                 finish();
@@ -175,8 +177,8 @@ public class Login extends AppCompatActivity {
         Machine mach3 = new Machine("Thor","Valhalla",3,true);
         Machine mach4 = new Machine("Odin","Valhalla",2,false);
 
-        ref.child("Machines").child("DEADBEEF").setValue(mach1);
-        ref.child("Machines").child("12345678").setValue(mach2);
+        ref.child("Machines").child("04457C8A6F4080").setValue(mach1);
+        ref.child("Machines").child("044D5B8A6F4080").setValue(mach2);
         ref.child("Machines").child("666EF666").setValue(mach3);
         ref.child("Machines").child("666AB666").setValue(mach4);
 

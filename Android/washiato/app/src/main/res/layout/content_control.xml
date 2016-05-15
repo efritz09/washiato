@@ -19,7 +19,7 @@
 
     <TextView
         android:id="@+id/text_cluster"
-        android:text="local cluster"
+        android:text=""
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -27,13 +27,22 @@
         android:layout_alignStart="@+id/text_user" />
 
     <TextView
-        android:id="@+id/text_machine_status"
-        android:text="machine status"
+        android:id="@+id/text_machine"
+        android:text="Not currently connected"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/text_cluster"
         android:layout_alignStart="@id/text_user" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text=""
+        android:id="@+id/text_machine_status"
+        android:layout_below="@+id/text_machine"
+        android:layout_alignStart="@+id/text_machine" />
 
     <TextView
         android:id="@+id/text_nfc_serial"
@@ -49,7 +58,7 @@
         android:id="@+id/button_cluster"
         android:text="Cluster"
         android:layout_alignStart="@id/text_user"
-        android:layout_below="@id/text_machine_status"
+        android:layout_below="@+id/text_machine_status"
         android:layout_marginTop="20dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -74,6 +83,8 @@
         android:layout_alignParentEnd="true"
         android:layout_marginEnd="10dp"
         android:layout_marginBottom="30dp" />
+
+
 
 
 </RelativeLayout>

@@ -9,7 +9,7 @@
 
     <TextView
         android:id="@+id/text_cluster_name"
-        android:text="This Cluster Name"
+        android:text="No Cluster Data Available"
         android:layout_marginTop="70dp"
         android:layout_marginLeft="10dp"
         android:textAppearance="?android:attr/textAppearanceLarge"
@@ -18,16 +18,17 @@
 
     <TextView
         android:id="@+id/text_cluster_location"
-        android:text="This Cluster Location"
+        android:text=""
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:layout_alignStart="@id/text_cluster_name"
-        android:layout_below="@id/text_cluster_name"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/text_cluster_name"
+        android:layout_toEndOf="@+id/text_cluster_name"
+        android:layout_marginStart="27dp" />
 
     <TextView
         android:id="@+id/text_cluster_washers_available"
-        android:text="This Cluster washers available"
+        android:text=""
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:layout_alignStart="@id/text_cluster_name"
         android:layout_below="@id/text_cluster_location"
@@ -36,7 +37,7 @@
 
     <TextView
         android:id="@+id/text_cluster_dryers_available"
-        android:text="This Cluster dryers available"
+        android:text=""
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:layout_alignStart="@id/text_cluster_name"
         android:layout_below="@id/text_cluster_washers_available"

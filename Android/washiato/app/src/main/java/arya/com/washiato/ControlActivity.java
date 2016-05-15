@@ -30,7 +30,14 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.firebase.client.AuthData;
+import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
+import com.firebase.client.ValueEventListener;
+
+import org.w3c.dom.Text;
+
+import java.util.Map;
 
 public class ControlActivity extends AppCompatActivity {
 
@@ -47,9 +54,15 @@ public class ControlActivity extends AppCompatActivity {
             }
     };
     public Firebase ref;
+//    private String serial;
     private static final String FIREBASE_URL = "https://washiato.firebaseio.com/";
     private final int MY_PERMISSIONS_REQUEST_LOCATION = 0;
     private final String TAG = "ControlActivity";
+    TextView text_user;
+    TextView text_cluster;
+    TextView text_machine;
+    TextView text_machine_status;
+    public static Map thisUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +70,10 @@ public class ControlActivity extends AppCompatActivity {
         setContentView(R.layout.activity_control);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        text_user = (TextView) findViewById(R.id.text_user);
+        text_cluster = (TextView) findViewById(R.id.text_cluster);
+        text_machine = (TextView) findViewById(R.id.text_machine);
+        text_machine_status = (TextView) findViewById(R.id.text_machine_status);
 
         //Create a reference to firebase database
         ref = new Firebase(FIREBASE_URL);
@@ -68,6 +85,23 @@ public class ControlActivity extends AppCompatActivity {
             Log.i(TAG, "asking about NFC");
             checkNFCon(); //check to see if NFC is on
         }
+
+        //check to see if this user has used this shit before:
+        ref.child("Users").child(ref.getAuth().getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Log.i(TAG,"Checking for previous info");
+                thisUser = (Map<String, String>) dataSnapshot.getValue();
+                text_user.setText((String)thisUser.get("UserName"));
+                if(thisUser.containsKey("defaultCluster")) {
+                    Log.i(TAG,"previous cluster exists");
+                    text_cluster.setText((String)thisUser.get("defaultCluster"));
+                }
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {}
+        });
 
     }
 
@@ -123,6 +157,23 @@ public class ControlActivity extends AppCompatActivity {
             AuthData authData = ref.getAuth();
             //Push to Firebase (temporarily)
             ref.child("Users").child(authData.getUid()).child("Washer NFC Serial").setValue(serial);
+            text_machine.setText(serial);
+            text_machine_status.setText("Washing");
+            //get the cluster
+            ref.child("Machines").child(serial).addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    Map thisMachine = (Map<String, String>) dataSnapshot.getValue();
+                    String cluster = (String) thisMachine.get("localCluster");
+                    Log.i(TAG, "found cluster: " + cluster);
+                    ref.child("Users").child(ref.getAuth().getUid()).child("defaultCluster").setValue(cluster);
+                }
+
+                @Override
+                public void onCancelled(FirebaseError firebaseError) {
+                    Log.i(TAG,"cancelled");
+                }
+            });
         }
     }
 
