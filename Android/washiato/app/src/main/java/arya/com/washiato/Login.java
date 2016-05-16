@@ -176,19 +176,32 @@ public class Login extends AppCompatActivity {
         Machine mach2 = new Machine("Athena","Olympus",2,false);
         Machine mach3 = new Machine("Thor","Valhalla",3,true);
         Machine mach4 = new Machine("Odin","Valhalla",2,false);
+        Machine mach5 = new Machine("Zeus","Olympus",0,false);
+        Machine mach6 = new Machine("Ares","Olympus",1,true);
+        Machine mach7 = new Machine("Poseidon","Olympus",2,true);
+        Machine mach8 = new Machine("Artemis","Olympus",1,false);
+
 
         ref.child("Machines").child("04457C8A6F4080").setValue(mach1);
         ref.child("Machines").child("044D5B8A6F4080").setValue(mach2);
         ref.child("Machines").child("666EF666").setValue(mach3);
         ref.child("Machines").child("666AB666").setValue(mach4);
+        ref.child("Machines").child("666xx666").setValue(mach5);
+        ref.child("Machines").child("666666").setValue(mach6);
+        ref.child("Machines").child("66666").setValue(mach7);
+        ref.child("Machines").child("6666").setValue(mach8);
 
         ArrayList<String> mach_array = new ArrayList<String>();
-        mach_array.add("Apollo");
-        mach_array.add("Athena");
+        mach_array.add("6666");
+        mach_array.add("66666");
+        mach_array.add("666666");
+        mach_array.add("666xx666");
+        mach_array.add("044D5B8A6F4080");
+        mach_array.add("04457C8A6F4080");
 
         ArrayList<String> mach_array2 = new ArrayList<String>();
-        mach_array2.add("Thor");
-        mach_array2.add("Odin");
+        mach_array2.add("666EF666");
+        mach_array2.add("666AB666");
 
         Cluster clus1 = new Cluster("Rains 218", 10, 6, mach_array);
         Cluster clus2 = new Cluster("Rains 217", 15, 8, mach_array2);
