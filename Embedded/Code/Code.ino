@@ -18,13 +18,15 @@
 #define UPPER_ACCEL_THRESHOLD 1200
 #define LOWER_ACCEL_THRESHOLD 800
 
-const char* ssid = "Stanford Residences";
+//const char* ssid = "Stanford Residences";
 
-//const char* ssid = "AdriAndroid";
+const char* ssid = "washiato";
 
 static String MAC_address = "";
 static int MachineState = MACHINE_UNOCCUPIED;
 MMA8452Q accel;
+LiquidCrystal lcd(0, 2, 12, 13, 14, 16);
+static unsigned long lastEvent;
 
 void setup() {
   Serial.begin(115200);
@@ -68,8 +70,6 @@ void setup() {
   accel.init(SCALE_2G, ODR_800);
   Serial.println("Accelerometer Successfully Initialized");
 
-  // Set up LCD screen
-  LiquidCrystal lcd(0, 2, 12, 13, 14, 16);
   // set up the LCD's number of columns and rows:
   lcd.begin(16, 2);
   // Print a message to the LCD.
@@ -89,6 +89,8 @@ void loop() {
       Serial.println("Now Washing");
       NextMachineState = MACHINE_WASHING;
       setFBStatus(MACHINE_WASHING);
+      setLCDStatus(MACHINE_WASHING);
+      lastEvent = millis();
     }
     break;
   case MACHINE_WASHING:
@@ -96,6 +98,8 @@ void loop() {
       Serial.println("Now Finished");
       NextMachineState = MACHINE_FINISHED;
       setFBStatus(MACHINE_FINISHED);
+      setLCDStatus(MACHINE_FINISHED);
+      lastEvent = millis();
     }
     break;
   case MACHINE_FINISHED:
@@ -103,6 +107,8 @@ void loop() {
       Serial.println("Now Unoccupied");
       NextMachineState = MACHINE_UNOCCUPIED;
       setFBStatus(MACHINE_UNOCCUPIED);
+      setLCDStatus(MACHINE_UNOCCUPIED);
+      lastEvent = millis();
     }
     break;
  }
@@ -140,11 +146,11 @@ bool checkMovement(void) {
     z_s = z_s - (z_s/(Window_Samples)) + (sq(new_z-z_mu)/(Window_Samples));
     //Serial.println(x_s);
 
-    Serial.print((String)sq(new_x-x_mu) + "\t");
-    Serial.print((String)sq(new_y-y_mu) + "\t");
-    Serial.print((String)sq(new_z-z_mu) + "\t");
+    //Serial.print((String)sq(new_x-x_mu) + "\t");
+    //Serial.print((String)sq(new_y-y_mu) + "\t");
+    //Serial.print((String)sq(new_z-z_mu) + "\t");
 
-    Serial.println(sqrt(sq(x_s)+sq(y_s)+sq(z_s)));
+    //Serial.println(sqrt(sq(x_s)+sq(y_s)+sq(z_s)));
     
   }
 
@@ -163,11 +169,32 @@ bool checkMovement(void) {
 
 // Returns true if door switch is open and false if it is closed
 bool checkDoor() {
-  return !(digitalRead(DOOR_PIN));
+  return digitalRead(DOOR_PIN);
 }
 
 // Function to set the status of the washing machine in FB
 void setFBStatus(int newStatus) {
   Firebase.set("Machines/" + MAC_address + "/Status", newStatus);
+}
+
+void setLCDTime(void) {
+
+}
+
+void setLCDStatus(int newStatus) {
+  switch (newStatus) {
+    case MACHINE_UNOCCUPIED:
+      lcd.setCursor(0,0);
+      lcd.print("Machine unloaded");
+      break;
+    case MACHINE_WASHING:
+      lcd.setCursor(0,0);
+      lcd.print("Machine started");
+      break;
+    case MACHINE_FINISHED:
+      lcd.setCursor(0,0);
+      lcd.print("Machine finished");
+    break;
+  }
 }
 
