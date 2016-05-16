@@ -6,8 +6,9 @@
 #include <FirebaseArduino.h>
 #include "ESP8266_MMA8452Q.h"
 #include <Arduino.h>
+#include <LiquidCrystal.h>
 
-#define DOOR_PIN 16
+#define DOOR_PIN 15
 
 #define MACHINE_UNOCCUPIED 0
 #define MACHINE_WASHING 1
@@ -34,7 +35,6 @@ void setup() {
 
   //Set up GPIO
   pinMode(DOOR_PIN, INPUT);       // Set door pin as input
-  digitalWrite(DOOR_PIN, HIGH);   // Activate internal pullups (apparently not working)
   
   //Connect to wifi
   WiFi.begin(ssid);
@@ -68,6 +68,13 @@ void setup() {
   accel.init(SCALE_2G, ODR_800);
   Serial.println("Accelerometer Successfully Initialized");
 
+  // Set up LCD screen
+  LiquidCrystal lcd(0, 2, 12, 13, 14, 16);
+  // set up the LCD's number of columns and rows:
+  lcd.begin(16, 2);
+  // Print a message to the LCD.
+  lcd.print("Washiato!");
+  
   setFBStatus(MACHINE_UNOCCUPIED);
 }
 
@@ -156,7 +163,7 @@ bool checkMovement(void) {
 
 // Returns true if door switch is open and false if it is closed
 bool checkDoor() {
-  return digitalRead(DOOR_PIN);
+  return !(digitalRead(DOOR_PIN));
 }
 
 // Function to set the status of the washing machine in FB
