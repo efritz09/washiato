@@ -114,6 +114,7 @@ public class ClusterActivity extends AppCompatActivity {
     }
 
     public void updateMachines() {
+        machineList.clear();
 
         //fill the array list with all the machines!
         Log.i(TAG,"number of machines: " + Integer.toString(cluster.machines.size()));
@@ -128,7 +129,6 @@ public class ClusterActivity extends AppCompatActivity {
                     Machine machine = new Machine();
                     Map map = (Map<String,Object>) dataSnapshot.getValue();
                     if(map == null) Log.i(TAG,"fucker is null");
-                    if(map.containsKey("localCluster")) Log.i(TAG,"key is in there");
                     machine.setLocalCluster((String)map.get("localCluster"));
                     machine.setName((String)map.get("name"));
                     machine.setStatus((int)(long)map.get("status"));

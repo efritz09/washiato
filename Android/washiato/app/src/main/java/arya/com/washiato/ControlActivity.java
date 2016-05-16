@@ -58,6 +58,7 @@ public class ControlActivity extends AppCompatActivity {
     private static final String FIREBASE_URL = "https://washiato.firebaseio.com/";
     private final int MY_PERMISSIONS_REQUEST_LOCATION = 0;
     private final String TAG = "ControlActivity";
+    String defClus;
     TextView text_user;
     TextView text_cluster;
     TextView text_machine;
@@ -95,7 +96,11 @@ public class ControlActivity extends AppCompatActivity {
                 text_user.setText((String)thisUser.get("UserName"));
                 if(thisUser.containsKey("defaultCluster")) {
                     Log.i(TAG,"previous cluster exists");
-                    text_cluster.setText((String)thisUser.get("defaultCluster"));
+                    defClus = (String)thisUser.get("defaultCluster");
+                    text_cluster.setText("Cluster: " + defClus);
+                }
+                else {
+                    text_cluster.setText("Cluster: xxx");
                 }
             }
 
@@ -166,7 +171,12 @@ public class ControlActivity extends AppCompatActivity {
                     Map thisMachine = (Map<String, String>) dataSnapshot.getValue();
                     String cluster = (String) thisMachine.get("localCluster");
                     Log.i(TAG, "found cluster: " + cluster);
-                    ref.child("Users").child(ref.getAuth().getUid()).child("defaultCluster").setValue(cluster);
+                    if (defClus== "") { //if nothing is saved in default cluster (first time use)
+                        ref.child("Users").child(ref.getAuth().getUid()).child("defaultCluster").setValue(cluster);
+                    }
+                    else if (cluster != defClus) { //if current cluster is different from default cluster
+                        text_cluster.setText("Cluster: " + cluster );
+                    }
                 }
 
                 @Override
