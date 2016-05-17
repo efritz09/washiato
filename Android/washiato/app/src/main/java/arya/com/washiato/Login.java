@@ -45,18 +45,20 @@ public class Login extends AppCompatActivity {
         setContentView(R.layout.activity_login);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        //Create a reference to firebase database
+        ref = new Firebase(FIREBASE_URL);
 
         //
         washiato.preferences = getPreferences(0); //get private preferences
         if(washiato.preferences.getBoolean(getString(R.string.pref_logged_in),false)) {
-            Log.i(TAG,"Logged in");
-            Intent Successful_login = new Intent(Login.this, ControlActivity.class);
-            startActivity(Successful_login);
-            finish();
+            if(ref.getAuth() != null) {
+                Log.i(TAG, "Logged in");
+                Intent Successful_login = new Intent(Login.this, ControlActivity.class);
+                startActivity(Successful_login);
+                finish();
+            }
         } else Log.i(TAG,"not logged");
 
-        //Create a reference to firebase database
-        ref = new Firebase(FIREBASE_URL);
         createMachines();
         //set up the firebase connection progress dialog
         mAuthProgressDialog = new ProgressDialog(this);
@@ -174,12 +176,12 @@ public class Login extends AppCompatActivity {
         Log.i(TAG,"create the machines in firebase");
         Machine mach1 = new Machine("Apollo","Olympus",0,true);
         Machine mach2 = new Machine("Athena","Olympus",2,false);
-        Machine mach3 = new Machine("Thor","Valhalla",3,true);
-        Machine mach4 = new Machine("Odin","Valhalla",2,false);
         Machine mach5 = new Machine("Zeus","Olympus",0,false);
         Machine mach6 = new Machine("Ares","Olympus",1,true);
-        Machine mach7 = new Machine("Poseidon","Valhalla",2,true);
-        Machine mach8 = new Machine("Artemis","Valhalla",1,false);
+        Machine mach3 = new Machine("Thor","Valhalla",1,true);
+        Machine mach4 = new Machine("Odin","Valhalla",2,false);
+        Machine mach7 = new Machine("Loki","Valhalla",0,true);
+        Machine mach8 = new Machine("Poseidon","Olympus",1,false);
 
 
         ref.child("Machines").child("04457C8A6F4080").setValue(mach1);
@@ -203,8 +205,8 @@ public class Login extends AppCompatActivity {
         mach_array2.add("04CF3652783F80");
         mach_array2.add("04F2C58A6F4080");
 
-        Cluster clus1 = new Cluster("Rains 218", 10, 6, mach_array);
-        Cluster clus2 = new Cluster("Rains 217", 15, 8, mach_array2);
+        Cluster clus1 = new Cluster("Rains 218", 1, 1, mach_array);
+        Cluster clus2 = new Cluster("Rains 217", 1, 0, mach_array2);
 
         ref.child("Clusters").child("Olympus").setValue(clus1);
         ref.child("Clusters").child("Valhalla").setValue(clus2);

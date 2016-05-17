@@ -2,6 +2,7 @@ package arya.com.washiato;
 
 import android.app.Activity;
 import android.content.Context;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -49,19 +50,25 @@ public class ClusterStatusAdapter extends ArrayAdapter {
         Machine thisMachine = data.get(position);
         switch (thisMachine.getStatus()) {
             case 0:
-                holder.status.setText("Open");
+                holder.status.setText(R.string.text_machine_open);
+//                holder.status.setText(ContextCompat.getColor(context, R.color.green));
+                holder.time.setText("");
                 //check to see if it's a washer or dryer, set icon accordingly
                 if (thisMachine.getWasher())
                     Picasso.with(context).load(R.mipmap.wm_open).into(holder.icon);
                 else Picasso.with(context).load(R.mipmap.dry_open).into(holder.icon);
                 break;
             case 1:
-                holder.status.setText("Running");
+                holder.status.setText(R.string.text_machine_running);
+//                holder.status.setText(ContextCompat.getColor(context, R.color.red));
+                holder.time.setText("");
                 if (thisMachine.getWasher()) Picasso.with(context).load(R.mipmap.wm_running).into(holder.icon);
                 else Picasso.with(context).load(R.mipmap.dry_running).into(holder.icon);
                 break;
             case 2:
-                holder.status.setText("Finished");
+                holder.status.setText(R.string.text_machine_finished);
+//                holder.status.setText(ContextCompat.getColor(context, R.color.gold));
+
                 if (thisMachine.getWasher()) Picasso.with(context).load(R.mipmap.wm_finished).into(holder.icon);
                 else Picasso.with(context).load(R.mipmap.dry_finished).into(holder.icon);
                 //maybe display time here?

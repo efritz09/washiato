@@ -90,8 +90,14 @@ public class ControlActivity extends AppCompatActivity {
             checkNFCon(); //check to see if NFC is on
         }
 
+        //add an if statement in case the ref.getauth().getuid() is null
+        if(ref.getAuth().getUid() == null) {
+            //launch the login activity
+            logOut(null);
+        }
+
         //check to see if this user has used this shit before:
-        ref.child("Users").child(ref.getAuth().getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+        ref.child("Users").child(ref.getAuth().getUid()).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Log.i(TAG,"Checking for previous info");
@@ -166,9 +172,9 @@ public class ControlActivity extends AppCompatActivity {
             //Push to Firebase (temporarily)
             ref.child("Users").child(authData.getUid()).child("Washer NFC Serial").setValue(serial);
             is_nfc_detected = true;
-            text_machine.setText(serial);
-            text_machine_status.setText("Washing");
-            //get the cluster
+//            text_machine.setText(serial);
+
+            //create a listener for changes in the system
             ref.child("Machines").child(serial).addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
@@ -188,6 +194,22 @@ public class ControlActivity extends AppCompatActivity {
                         ref.child("Users").child(ref.getAuth().getUid()).child("defaultCluster").setValue(cluster);
                         text_cluster.setText("Default Cluster: " + cluster);
                     }
+                    //set the machine name:
+                    text_machine.setText((String)thisMachine.get("name") + ": ");
+                    //update the shit with statuses
+                    //EVENTUALLY ADD PUSH NOTIFICATION STUFF HERE?
+                    int status = (int)(long)thisMachine.get("status");
+                    if(status == 0) {
+                        text_machine_status.setText(R.string.text_machine_open);
+                        text_machine_status.setTextColor(getResources().getColor(R.color.green));
+                    } else if(status == 1) {
+                        text_machine_status.setText(R.string.text_machine_running);
+                        text_machine_status.setTextColor(getResources().getColor(R.color.red));
+                    } else if(status == 2) {
+                        text_machine_status.setText(R.string.text_machine_finished);
+                        text_machine_status.setTextColor(getResources().getColor(R.color.gold));
+                    }
+                    else Log.i(TAG,"Somehow we have a status issue");
                 }
 
                 @Override

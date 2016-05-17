@@ -22,5 +22,8 @@
     <string name="pref_user_id">USER_ID</string>
     <string name="pref_nfc">DONT_USE_NFC</string>
     <string name="washiato_splash_image">washiato splash image</string>
+    <string name="text_machine_open">Open</string>
+    <string name="text_machine_running">Running</string>
+    <string name="text_machine_finished">Finished</string>
 
 </resources>

@@ -6,6 +6,16 @@
     <color name="gray">#808080</color>
     <color name="black">#000000</color>
     <color name="white">#FFFFFF</color>
-    <color name="green">#A4C639</color>
-    <color name="red">#B20000</color>
+    <color name="altgreen">#A4C639</color>
+    <color name="lightgray">#c0c0c0</color>
+    <color name="green">#4F894F</color>
+    <color name="darkgreen">#417141</color>
+    <color name="red">#CC4040</color>
+    <color name="forestgreen">#59b300</color>
+    <color name="dark">#303030</color>
+    <color name="lessdark">#404040</color>
+    <color name="stanford">#8C1515</color>
+    <color name="yellow">#ffff00</color>
+    <color name="gold">#cccc33</color>
+    <color name="darkred">#B20000</color>
 </resources>

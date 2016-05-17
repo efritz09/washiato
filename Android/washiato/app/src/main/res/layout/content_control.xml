@@ -50,8 +50,8 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text=""
         android:id="@+id/text_machine_status"
-        android:layout_below="@+id/text_machine"
-        android:layout_alignStart="@+id/text_machine" />
+        android:layout_toRightOf="@id/text_machine"
+        android:layout_alignTop="@id/text_machine"/>
 
     <TextView
         android:id="@+id/text_nfc_serial"
@@ -65,7 +65,7 @@
 
     <Button
         android:id="@+id/button_cluster"
-        android:text="Cluster"
+        android:text="Cluster Status"
         android:layout_alignStart="@id/text_user"
         android:layout_below="@+id/text_machine_status"
         android:layout_marginTop="20dp"

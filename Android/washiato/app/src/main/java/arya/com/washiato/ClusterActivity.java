@@ -79,18 +79,18 @@ public class ClusterActivity extends AppCompatActivity {
                 public void onCancelled(FirebaseError firebaseError) {
                 }
             });
-            ref.child("Machines").addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    Log.i(TAG, "updating machines");
-                    //update the machines in the listview
-                    updateMachines();
-                }
-
-                @Override
-                public void onCancelled(FirebaseError firebaseError) {
-                }
-            });
+//            ref.child("Machines").addValueEventListener(new ValueEventListener() {
+//                @Override
+//                public void onDataChange(DataSnapshot dataSnapshot) {
+//                    Log.i(TAG, "updating machines");
+//                    //update the machines in the listview
+//                    updateMachines();
+//                }
+//
+//                @Override
+//                public void onCancelled(FirebaseError firebaseError) {
+//                }
+//            });
         }
 
         else if (ControlActivity.thisUser.containsKey("defaultCluster") && ControlActivity.getNfcStatus()== true){
@@ -113,18 +113,6 @@ public class ClusterActivity extends AppCompatActivity {
                             //update all the text views
                             updateCluster();
                         }
-                        @Override
-                        public void onCancelled(FirebaseError firebaseError) {
-                        }
-                    });
-                    ref.child("Machines").addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            Log.i(TAG, "updating machines");
-                            //update the machines in the listview
-                            updateMachines();
-                        }
-
                         @Override
                         public void onCancelled(FirebaseError firebaseError) {
                         }
@@ -152,6 +140,20 @@ public class ClusterActivity extends AppCompatActivity {
         text_cluster_location.setText(cluster.getLocation());
         text_cluster_dryers_available.setText(Integer.toString(cluster.getNumDry()) + " dryers available");
         text_cluster_washers_available.setText(Integer.toString(cluster.getNumWash()) + " washers available");
+
+        //this is here to prevent the machine from updating before the cluster in the event of a cluster change
+        ref.child("Machines").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Log.i(TAG, "updating machines");
+                //update the machines in the listview
+                updateMachines();
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+            }
+        });
     }
 
     public void updateMachines() {
