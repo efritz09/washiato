@@ -8,7 +8,7 @@
 #include <Arduino.h>
 #include <LiquidCrystal.h>
 
-#define DOOR_PIN 15
+#define BACKLIGHT_PIN 15
 
 #define MACHINE_UNOCCUPIED 0
 #define MACHINE_WASHING 1
@@ -17,16 +17,21 @@
 #define Window_Samples 1000
 #define UPPER_ACCEL_THRESHOLD 1200
 #define LOWER_ACCEL_THRESHOLD 800
+#define DOOR_THRESHOLD 500000
+#define RMS_CAP 10000
+#define ONE_MIN 60000
 
-//const char* ssid = "Stanford Residences";
+const char* ssid = "Stanford Residences";
 
-const char* ssid = "washiato";
+//const char* ssid = "washiato";
 
 static String MAC_address = "";
 static int MachineState = MACHINE_UNOCCUPIED;
 MMA8452Q accel;
 LiquidCrystal lcd(0, 2, 12, 13, 14, 16);
 static unsigned long lastEvent;
+static bool isMoving;
+static bool door_close;
 
 void setup() {
   Serial.begin(115200);
@@ -36,7 +41,7 @@ void setup() {
   Serial.println(ssid);
 
   //Set up GPIO
-  pinMode(DOOR_PIN, INPUT);       // Set door pin as input
+  pinMode(BACKLIGHT_PIN, OUTPUT);
   
   //Connect to wifi
   WiFi.begin(ssid);
@@ -80,8 +85,7 @@ void setup() {
 
 void loop() {
  int NextMachineState = MachineState;
- bool isMoving = checkMovement();
- bool doorStatus = checkDoor();
+ checkMovement();
  
  switch(MachineState) {
   case MACHINE_UNOCCUPIED:
@@ -99,25 +103,28 @@ void loop() {
       NextMachineState = MACHINE_FINISHED;
       setFBStatus(MACHINE_FINISHED);
       setLCDStatus(MACHINE_FINISHED);
+      digitalWrite(BACKLIGHT_PIN, HIGH);
       lastEvent = millis();
     }
     break;
   case MACHINE_FINISHED:
-    if (doorStatus) {
+    if (door_close) {
       Serial.println("Now Unoccupied");
       NextMachineState = MACHINE_UNOCCUPIED;
       setFBStatus(MACHINE_UNOCCUPIED);
       setLCDStatus(MACHINE_UNOCCUPIED);
+      digitalWrite(BACKLIGHT_PIN, LOW);
       lastEvent = millis();
     }
     break;
  }
+ setLCDTime();
  MachineState = NextMachineState;
 }
 
 // Function to calculate moving average/variance and return bool to indicate whether washer is on
 // Using algorithms from here: http://jonisalonen.com/2014/efficient-and-accurate-rolling-standard-deviation/
-bool checkMovement(void) {
+void checkMovement(void) {
   // Initialize averages to current value so that we come out of reset with zero variance
   accel.read();
   static float x_mu = (float)accel.x;   // moving average of x acceleration
@@ -137,15 +144,39 @@ bool checkMovement(void) {
     float new_z = (float)accel.z;
     // Calculate x stuff
     x_mu = x_mu - (x_mu/Window_Samples) + (new_x/Window_Samples);
-    x_s = x_s - (x_s/(Window_Samples)) + (sq(new_x-x_mu)/(Window_Samples));
+    float x_diff = sq(new_x-x_mu);
+    
     // Calculate y stuff
     y_mu = y_mu - (y_mu/Window_Samples) + (new_y/Window_Samples);
-    y_s = y_s - (y_s/(Window_Samples)) + (sq(new_y-y_mu)/(Window_Samples));
+    float y_diff = sq(new_y-y_mu);
+    
     // Calculate z stuff
     z_mu = z_mu - (z_mu/Window_Samples) + (new_z/Window_Samples);
-    z_s = z_s - (z_s/(Window_Samples)) + (sq(new_z-z_mu)/(Window_Samples));
-    //Serial.println(x_s);
+    float z_diff = sq(new_z-z_mu);
 
+    // Check door slam
+    door_close = (sqrt(sq(x_diff)+sq(y_diff)+sq(z_diff)) > DOOR_THRESHOLD); 
+
+    // Implement cap to lessen impact of short impacts
+    if (x_diff > RMS_CAP) {
+      x_diff = RMS_CAP;
+    }
+
+    if (y_diff > RMS_CAP) {
+      y_diff = RMS_CAP;
+    }
+
+    if (z_diff > RMS_CAP) {
+      z_diff = RMS_CAP;
+    }
+    
+    // if value wasn't from door, add it to new magnitude
+    if (!door_close) {
+      x_s = x_s - (x_s/(Window_Samples)) + (x_diff/(Window_Samples));
+      y_s = y_s - (y_s/(Window_Samples)) + (y_diff/(Window_Samples));
+      z_s = z_s - (z_s/(Window_Samples)) + (z_diff/(Window_Samples));
+    }
+   
     //Serial.print((String)sq(new_x-x_mu) + "\t");
     //Serial.print((String)sq(new_y-y_mu) + "\t");
     //Serial.print((String)sq(new_z-z_mu) + "\t");
@@ -155,21 +186,16 @@ bool checkMovement(void) {
   }
 
   // decide whether we are moving
-  bool isMoving = ((x_s>Accel_Var_Threshold) || (y_s>Accel_Var_Threshold) || (z_s>Accel_Var_Threshold));
+  isMoving = (sqrt(sq(x_s)+sq(y_s)+sq(z_s)) > Accel_Var_Threshold);
 
   // Introduce software hysteresis so we don't flip back and forth
-  if (isMoving) {
-    Accel_Var_Threshold = LOWER_ACCEL_THRESHOLD;
-  } else {
-    Accel_Var_Threshold = UPPER_ACCEL_THRESHOLD;
-  }
+//  if (isMoving) {
+//    Accel_Var_Threshold = LOWER_ACCEL_THRESHOLD;
+//  } else {
+//    Accel_Var_Threshold = UPPER_ACCEL_THRESHOLD;
+//  }
   
-  return isMoving;
-}
-
-// Returns true if door switch is open and false if it is closed
-bool checkDoor() {
-  return digitalRead(DOOR_PIN);
+  return;
 }
 
 // Function to set the status of the washing machine in FB
@@ -178,20 +204,29 @@ void setFBStatus(int newStatus) {
 }
 
 void setLCDTime(void) {
-
+  lcd.setCursor(0,1);
+  unsigned long timeDiff = millis()-lastEvent;
+  if (timeDiff<ONE_MIN) {
+    lcd.print((String)(timeDiff/1000) + " sec ago");
+  } else {
+    lcd.print((String)(timeDiff/60000) + " min " + (String)((timeDiff%60000)/1000) + " sec ago");
+  }
 }
 
 void setLCDStatus(int newStatus) {
   switch (newStatus) {
     case MACHINE_UNOCCUPIED:
+      lcd.clear();
       lcd.setCursor(0,0);
       lcd.print("Machine unloaded");
       break;
     case MACHINE_WASHING:
+      lcd.clear();
       lcd.setCursor(0,0);
       lcd.print("Machine started");
       break;
     case MACHINE_FINISHED:
+      lcd.clear();
       lcd.setCursor(0,0);
       lcd.print("Machine finished");
     break;
