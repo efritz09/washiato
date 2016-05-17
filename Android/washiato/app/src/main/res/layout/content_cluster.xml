@@ -54,4 +54,24 @@
         android:layout_below="@id/text_cluster_dryers_available"
         />
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="stat1"
+        android:id="@+id/button"
+        android:layout_centerVertical="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="42dp"
+        android:onClick="changeStat1"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="stat2"
+        android:id="@+id/button2"
+        android:layout_below="@+id/button"
+        android:layout_alignStart="@+id/button"
+        android:layout_marginTop="31dp"
+        android:onClick="changeStat2"/>
+
 </RelativeLayout>
