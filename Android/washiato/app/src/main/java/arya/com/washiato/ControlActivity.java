@@ -57,7 +57,7 @@ public class ControlActivity extends AppCompatActivity {
 //    private String serial;
     private static final String FIREBASE_URL = "https://washiato.firebaseio.com/";
     private final int MY_PERMISSIONS_REQUEST_LOCATION = 0;
-    private final String TAG = "ControlActivity";
+    private static final String TAG = "ControlActivity";
     String defClus;
     TextView text_user;
     TextView text_cluster;
@@ -65,6 +65,7 @@ public class ControlActivity extends AppCompatActivity {
     TextView text_machine;
     TextView text_machine_status;
     public static Map thisUser;
+    public static boolean is_nfc_detected = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -164,6 +165,7 @@ public class ControlActivity extends AppCompatActivity {
             AuthData authData = ref.getAuth();
             //Push to Firebase (temporarily)
             ref.child("Users").child(authData.getUid()).child("Washer NFC Serial").setValue(serial);
+            is_nfc_detected = true;
             text_machine.setText(serial);
             text_machine_status.setText("Washing");
             //get the cluster
@@ -301,6 +303,17 @@ public class ControlActivity extends AppCompatActivity {
         } else {
             Intent intent = new Intent(Settings.ACTION_WIRELESS_SETTINGS);
             startActivity(intent);
+        }
+    }
+
+    public static boolean getNfcStatus() {
+        if(is_nfc_detected == true){
+            Log.i(TAG, "nfc detected");
+            return true;
+        }
+        else {
+            Log.i(TAG, "NO nfc");
+            return false;
         }
     }
 

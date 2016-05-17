@@ -28,7 +28,9 @@ public class ClusterActivity extends AppCompatActivity {
     private static final String FIREBASE_URL = "https://washiato.firebaseio.com/";
     public Cluster cluster = new Cluster();
     public Map<String,Object> clusterMap;
-    public String clusterName;
+    public String defclusterName;
+    public String currclusterName;
+    public static String clusterName;
     public ArrayList<Machine> machineList;
     public ClusterStatusAdapter statusAdapter;
 
@@ -54,8 +56,8 @@ public class ClusterActivity extends AppCompatActivity {
 
         machineList = new ArrayList<>();
         //check to see if there's a default cluster. if so, get it
-        if(ControlActivity.thisUser.containsKey("defaultCluster")) {
-            //cluster exists
+        if(ControlActivity.thisUser.containsKey("defaultCluster") && ControlActivity.getNfcStatus()== false) {
+            //cluster exists; pull this data
             clusterName = (String) ControlActivity.thisUser.get("defaultCluster");
             Log.i(TAG, "cluster exists! getting data from " + clusterName);
 
@@ -91,41 +93,43 @@ public class ClusterActivity extends AppCompatActivity {
             });
         }
 
-        else {
+        else if (ControlActivity.thisUser.containsKey("defaultCluster") && ControlActivity.getNfcStatus()== true){
                 //cluster is different from default cluster
-                clusterName = (String) ControlActivity.thisUser.get("localCluster");
-                Log.i(TAG, "different cluster from default! getting data from " + clusterName);
+                currclusterName = (String) ControlActivity.thisUser.get("CurrCluster");
+                clusterName = currclusterName;
+                Log.i(TAG,clusterName);
+                    Log.i(TAG, "different cluster from default! getting data from " + clusterName);
 
-                ref.child("Clusters").child(clusterName).addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        //Store this in the cluster class
-                        clusterMap = (Map<String, Object>) dataSnapshot.getValue();
-                        Log.i(TAG, (String) clusterMap.get("location"));
-                        cluster.setLocation((String) clusterMap.get("location"));
-                        cluster.setNumDry((int) (long) clusterMap.get("numDry"));
-                        cluster.setNumWash((int) (long) clusterMap.get("numWash"));
-                        cluster.setMachines((ArrayList<String>) clusterMap.get("machines"));
-                        //update all the text views
-                        updateCluster();
-                    }
-                @Override
-                public void onCancelled(FirebaseError firebaseError) {
-                }
-            });
-            ref.child("Machines").addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    Log.i(TAG, "updating machines");
-                    //update the machines in the listview
-                    updateMachines();
-                }
+                    ref.child("Clusters").child(clusterName).addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            //Store this in the cluster class
+                            clusterMap = (Map<String, Object>) dataSnapshot.getValue();
+                            Log.i(TAG, (String) clusterMap.get("location"));
+                            cluster.setLocation((String) clusterMap.get("location"));
+                            cluster.setNumDry((int) (long) clusterMap.get("numDry"));
+                            cluster.setNumWash((int) (long) clusterMap.get("numWash"));
+                            cluster.setMachines((ArrayList<String>) clusterMap.get("machines"));
+                            //update all the text views
+                            updateCluster();
+                        }
+                        @Override
+                        public void onCancelled(FirebaseError firebaseError) {
+                        }
+                    });
+                    ref.child("Machines").addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            Log.i(TAG, "updating machines");
+                            //update the machines in the listview
+                            updateMachines();
+                        }
 
-                @Override
-                public void onCancelled(FirebaseError firebaseError) {
+                        @Override
+                        public void onCancelled(FirebaseError firebaseError) {
+                        }
+                    });
                 }
-            });
-        }
 
         ListView listView = (ListView) findViewById(R.id.listview_cluster);
         statusAdapter = new ClusterStatusAdapter(this, R.layout.cluster_status, machineList);
