@@ -61,6 +61,7 @@ public class ControlActivity extends AppCompatActivity {
     String defClus;
     TextView text_user;
     TextView text_cluster;
+    TextView text_cluster_current;
     TextView text_machine;
     TextView text_machine_status;
     public static Map thisUser;
@@ -73,6 +74,7 @@ public class ControlActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         text_user = (TextView) findViewById(R.id.text_user);
         text_cluster = (TextView) findViewById(R.id.text_cluster);
+        text_cluster_current = (TextView) findViewById(R.id.text_cluster_current);
         text_machine = (TextView) findViewById(R.id.text_machine);
         text_machine_status = (TextView) findViewById(R.id.text_machine_status);
 
@@ -94,13 +96,13 @@ public class ControlActivity extends AppCompatActivity {
                 Log.i(TAG,"Checking for previous info");
                 thisUser = (Map<String, String>) dataSnapshot.getValue();
                 text_user.setText((String)thisUser.get("UserName"));
-                if(thisUser.containsKey("defaultCluster")) {
+                if(thisUser.containsKey("defaultCluster")) { //if default cluster already exists, set textview
                     Log.i(TAG,"previous cluster exists");
                     defClus = (String)thisUser.get("defaultCluster");
-                    text_cluster.setText("Cluster: " + defClus);
+                    text_cluster.setText("Default Cluster: " + defClus);
                 }
-                else {
-                    text_cluster.setText("Cluster: xxx");
+                else { //else textview is blank
+                    text_cluster.setText("Default Cluster: " + "Not set");
                 }
             }
 
@@ -171,11 +173,18 @@ public class ControlActivity extends AppCompatActivity {
                     Map thisMachine = (Map<String, String>) dataSnapshot.getValue();
                     String cluster = (String) thisMachine.get("localCluster");
                     Log.i(TAG, "found cluster: " + cluster);
-                    if (defClus== "") { //if nothing is saved in default cluster (first time use)
-                        ref.child("Users").child(ref.getAuth().getUid()).child("defaultCluster").setValue(cluster);
+                    if(thisUser.containsKey("defaultCluster")){//if default cluster already exists
+                        if(cluster != defClus){ //AND cluster triggered by NFC is not same as default, change textview current cluster
+                            text_cluster_current.setText("Current Cluster: " + cluster );
+                            ref.child("Users").child(ref.getAuth().getUid()).child("CurrCluster").setValue(cluster); //current cluster to Firebase
+                        }
+                        else {
+                            text_cluster_current.setText("Current Cluster: " + cluster ); //else set current cluster to same as default
+                        }
                     }
-                    else if (cluster != defClus) { //if current cluster is different from default cluster
-                        text_cluster.setText("Cluster: " + cluster );
+                    else { //NO default cluster set yet, hence add to Firebase and display in Control Activity
+                        ref.child("Users").child(ref.getAuth().getUid()).child("defaultCluster").setValue(cluster);
+                        text_cluster.setText("Default Cluster: " + cluster);
                     }
                 }
 

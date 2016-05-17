@@ -27,12 +27,21 @@
         android:layout_alignStart="@+id/text_user" />
 
     <TextView
+        android:id="@+id/text_cluster_current"
+        android:text=""
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/text_cluster"
+        android:layout_alignStart="@+id/text_cluster" />
+
+    <TextView
         android:id="@+id/text_machine"
         android:text="Not currently connected"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/text_cluster"
+        android:layout_below="@id/text_cluster_current"
         android:layout_alignStart="@id/text_user" />
 
     <TextView

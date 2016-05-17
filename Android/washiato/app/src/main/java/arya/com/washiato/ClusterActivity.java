@@ -91,6 +91,42 @@ public class ClusterActivity extends AppCompatActivity {
             });
         }
 
+        else {
+                //cluster is different from default cluster
+                clusterName = (String) ControlActivity.thisUser.get("localCluster");
+                Log.i(TAG, "different cluster from default! getting data from " + clusterName);
+
+                ref.child("Clusters").child(clusterName).addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        //Store this in the cluster class
+                        clusterMap = (Map<String, Object>) dataSnapshot.getValue();
+                        Log.i(TAG, (String) clusterMap.get("location"));
+                        cluster.setLocation((String) clusterMap.get("location"));
+                        cluster.setNumDry((int) (long) clusterMap.get("numDry"));
+                        cluster.setNumWash((int) (long) clusterMap.get("numWash"));
+                        cluster.setMachines((ArrayList<String>) clusterMap.get("machines"));
+                        //update all the text views
+                        updateCluster();
+                    }
+                @Override
+                public void onCancelled(FirebaseError firebaseError) {
+                }
+            });
+            ref.child("Machines").addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    Log.i(TAG, "updating machines");
+                    //update the machines in the listview
+                    updateMachines();
+                }
+
+                @Override
+                public void onCancelled(FirebaseError firebaseError) {
+                }
+            });
+        }
+
         ListView listView = (ListView) findViewById(R.id.listview_cluster);
         statusAdapter = new ClusterStatusAdapter(this, R.layout.cluster_status, machineList);
         listView.setAdapter(statusAdapter);
