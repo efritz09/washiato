@@ -1,5 +1,6 @@
 package arya.com.washiato;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -144,4 +145,15 @@ public class ClusterActivity extends AppCompatActivity {
 
     }
 
+    //Debugging cluster view: function when button stat1 is pressed; changes status of a machine in Firebase
+    public void changeStat1(View view) {
+        Log.i(TAG,"changing status 1 in Firebase");
+        ref.child("Machines").child("04457C8A6F4080").child("status").setValue(2);
+    }
+
+    //Debugging cluster view: function when button stat2 is pressed; changes status of a machine in Firebase
+    public void changeStat2(View view) {
+        Log.i(TAG,"changing status 2 in Firebase");
+        ref.child("Machines").child("044D5B8A6F4080").child("status").setValue(0);
+    }
 }
