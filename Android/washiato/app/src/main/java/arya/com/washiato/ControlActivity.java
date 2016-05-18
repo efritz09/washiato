@@ -10,6 +10,7 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.renderscript.Sampler;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -35,6 +36,7 @@ import com.firebase.client.AuthData;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
+import com.firebase.client.Query;
 import com.firebase.client.ValueEventListener;
 
 import org.w3c.dom.Text;
@@ -71,6 +73,8 @@ public class ControlActivity extends AppCompatActivity {
     public static boolean is_nfc_detected = false;
     public static String serial;
     final Context context = this; //Set context
+    ValueEventListener user_listener;
+    ValueEventListener machine_listener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,7 +114,7 @@ public class ControlActivity extends AppCompatActivity {
             thisUser.put("UserName","anonymous");
         }else {
             //check to see if this user has used this shit before:
-            ref.child("Users").child(ref.getAuth().getUid()).addValueEventListener(new ValueEventListener() {
+            user_listener =  ref.child("Users").child(ref.getAuth().getUid()).addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     Log.i(TAG, "Checking for previous info");
@@ -190,7 +194,7 @@ public class ControlActivity extends AppCompatActivity {
             is_nfc_detected = true; // update nfc check variable
 
             //create a listener for changes in the system
-            ref.child("Machines").child(serial).addValueEventListener(new ValueEventListener() {
+            machine_listener = ref.child("Machines").child(serial).addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     Map thisMachine = (Map<String, String>) dataSnapshot.getValue();
@@ -263,6 +267,10 @@ public class ControlActivity extends AppCompatActivity {
         washiato.preferencesEditor.commit();
         ref.unauth();
         Log.i(TAG,"logging out...");
+        if(getNfcStatus() == true){ //if NFC pairing is active, the event listeners exist => remove them on logout
+            ref.removeEventListener(user_listener);
+            ref.removeEventListener(machine_listener);
+        }
         //open the login screen
         Intent intent = new Intent(this, Login.class);
         startActivity(intent);
