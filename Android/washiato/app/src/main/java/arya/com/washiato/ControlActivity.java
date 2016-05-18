@@ -255,8 +255,13 @@ public class ControlActivity extends AppCompatActivity {
     //function implemented when "I'm on my way" button is pressed; updates omw variable under Machines in Firebase
     public void omw(View view) {
         Log.i(TAG,"OMW");
-        ref.child("Machines").child(serial).child("omw").setValue(1); //change omw variable under Machines in Firebase
-        Toast.makeText(context, getString(R.string.omw), Toast.LENGTH_LONG).show(); //show toast for OMW
+        if(getNfcStatus()==true){
+            ref.child("Machines").child(serial).child("omw").setValue(1); //change omw variable under Machines in Firebase
+            Toast.makeText(context, getString(R.string.omw), Toast.LENGTH_LONG).show(); //show toast for OMW
+        }
+        else {
+            Toast.makeText(context, getString(R.string.no_connection), Toast.LENGTH_LONG).show(); //show toast for OMW
+        }
     }
 
     public void logOut(View view) {
@@ -268,8 +273,16 @@ public class ControlActivity extends AppCompatActivity {
         ref.unauth();
         Log.i(TAG,"logging out...");
         if(getNfcStatus() == true){ //if NFC pairing is active, the event listeners exist => remove them on logout
-            ref.removeEventListener(user_listener);
-            ref.removeEventListener(machine_listener);
+            if(user_listener!=null && machine_listener != null){
+                ref.removeEventListener(user_listener);
+                ref.removeEventListener(machine_listener);
+            }
+           else if (user_listener != null) {
+                ref.removeEventListener(user_listener);
+            }
+            else if (machine_listener != null) {
+                ref.removeEventListener(machine_listener);
+            }
         }
         //open the login screen
         Intent intent = new Intent(this, Login.class);
