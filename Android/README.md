@@ -11,6 +11,17 @@ Since Adriano says we need to use 2 more libraries, here's a short list of some 
 Otherwise, check out [this](https://github.com/codepath/android_guides/wiki/Must-Have-Libraries) for more libraries. There's a huge list that's split up into categories at the bottom.
 
 =================================================================================================
+### 05/17/2016- Arya
+Current status: Major OMW and logout bugs are fixed. Guest logout fixed. 
+
+Everything operates under the assumption that the user does not log out during a washing cycle. 
+If they do so, we "lose" the pairing with NFC serial (its exists in Firebase, but is not displayed if they log back in). 
+This is a small enough bug and I think we are okay for checkoff; but we should try to fix it for later!
+
+Next Steps: Fix this bug such that an NFC serial stays associated with a user until the cycle is finished for them 
+(and also display that even if they log out and log back in during a cycle).
+
+=================================================================================================
 ### 05/16/2016- Arya
 Control Activity page displays current and default cluster for each user (so does FireBase). 
 I was trying to get Cluster Activity to display different ListViews depending on 
