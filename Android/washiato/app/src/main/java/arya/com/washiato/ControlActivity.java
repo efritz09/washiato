@@ -89,8 +89,9 @@ public class ControlActivity extends AppCompatActivity {
 
         checkPermissions(this); //check the permissions
 
-        //check to see if we should ask about NFC
-        if(!washiato.preferences.getBoolean(getString(R.string.pref_nfc),false)) {
+        //check to see if we should ask about NFC (first see if NFC is supported)
+        if(washiato.preferences.getBoolean(getString(R.string.nfc_supported),true)
+            && !washiato.preferences.getBoolean(getString(R.string.pref_nfc),false)) {
             Log.i(TAG, "asking about NFC");
             checkNFCon(); //check to see if NFC is on
         }
@@ -148,20 +149,22 @@ public class ControlActivity extends AppCompatActivity {
 
     }
 
-
     @Override
     protected void onResume() {
         super.onResume();
-        // creating pending intent:
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
-        // creating intent receiver for NFC events:
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(NfcAdapter.ACTION_TAG_DISCOVERED);
-        filter.addAction(NfcAdapter.ACTION_NDEF_DISCOVERED);
-        filter.addAction(NfcAdapter.ACTION_TECH_DISCOVERED);
-        // enabling foreground dispatch for getting intent from NFC event:
-        NfcAdapter nfcAdapter = NfcAdapter.getDefaultAdapter(this);
-        nfcAdapter.enableForegroundDispatch(this, pendingIntent, new IntentFilter[]{filter}, this.techList);
+        if(washiato.preferences.getBoolean(getString(R.string.nfc_supported),false)) {
+            // creating pending intent:
+            PendingIntent pendingIntent = PendingIntent.getActivity(this, 0,
+                    new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
+            // creating intent receiver for NFC events:
+            IntentFilter filter = new IntentFilter();
+            filter.addAction(NfcAdapter.ACTION_TAG_DISCOVERED);
+            filter.addAction(NfcAdapter.ACTION_NDEF_DISCOVERED);
+            filter.addAction(NfcAdapter.ACTION_TECH_DISCOVERED);
+            // enabling foreground dispatch for getting intent from NFC event:
+            NfcAdapter nfcAdapter = NfcAdapter.getDefaultAdapter(this);
+            nfcAdapter.enableForegroundDispatch(this, pendingIntent, new IntentFilter[]{filter}, this.techList);
+        }
     }
 
     @Override
@@ -284,6 +287,18 @@ public class ControlActivity extends AppCompatActivity {
      */
     public void checkNFCon () {
         android.nfc.NfcAdapter mNfcAdapter= android.nfc.NfcAdapter.getDefaultAdapter(ControlActivity.this);
+        if(mNfcAdapter == null) {
+           Log.i(TAG, "This device does not support NFC");
+            washiato.preferencesEditor = washiato.preferences.edit();
+            washiato.preferencesEditor.putBoolean(getString(R.string.nfc_supported),false);
+            washiato.preferencesEditor.apply();
+            return;
+        }
+
+        washiato.preferencesEditor = washiato.preferences.edit();
+        washiato.preferencesEditor.putBoolean(getString(R.string.nfc_supported),true);
+        washiato.preferencesEditor.apply();
+
         if (!mNfcAdapter.isEnabled()) {
             AlertDialog.Builder alertbox = new AlertDialog.Builder(ControlActivity.this);
             alertbox.setTitle("Enable NFC");

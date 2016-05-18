@@ -37,7 +37,8 @@ public class Login extends AppCompatActivity {
     private Firebase.AuthStateListener mAuthStateListener;
     final Context context = this; //Set context
 
-    private final String TAG = "LoginActivity";
+    private static final String TAG = "LoginActivity";
+    private static final boolean RESET_FIREBASE_CLUSTERS = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,7 +60,10 @@ public class Login extends AppCompatActivity {
             }
         } else Log.i(TAG,"not logged");
 
-        //createMachines();
+        if(RESET_FIREBASE_CLUSTERS) {
+            createMachines();
+        }
+
         //set up the firebase connection progress dialog
         mAuthProgressDialog = new ProgressDialog(this);
         mAuthProgressDialog.setTitle("Loading");
@@ -117,15 +121,12 @@ public class Login extends AppCompatActivity {
                 map.put("Password", pawd); //fill map
                 map.put("UserName", name);
                 ref.child("Users").child(authData.getUid()).updateChildren(map); //update firebase database
-//                Toast.makeText(context, getString(R.string.success_ctrl_activity), Toast.LENGTH_LONG).show(); //show toast for successful login
 
                 //store this user info in shared preferences
                 washiato.preferencesEditor = washiato.preferences.edit();
                 washiato.preferencesEditor.putBoolean(getString(R.string.pref_logged_in), true);
                 washiato.preferencesEditor.putString(getString(R.string.pref_user_id), authData.getUid());
                 washiato.preferencesEditor.apply();
-
-
 
                 startActivity(intent); //start control activity
                 finish();
@@ -136,7 +137,6 @@ public class Login extends AppCompatActivity {
                 mAuthProgressDialog.hide();
                 Log.e("LaunchActivity", "Error logging in");
                 showErrorDialog(firebaseError.toString());
-//                Toast.makeText(context, getString(R.string.fail), Toast.LENGTH_LONG).show(); //show toast for failed login
             }
         });
     }

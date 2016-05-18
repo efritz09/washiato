@@ -26,4 +26,5 @@
     <string name="text_machine_running">Running</string>
     <string name="text_machine_finished">Finished</string>
     <string name="omw">On my way messages sent!</string>
+    <string name="nfc_supported">NFC_SUPPORTED</string>
 </resources>
