@@ -100,11 +100,8 @@ public class ControlActivity extends AppCompatActivity {
             checkNFCon(); //check to see if NFC is on
         }
 
-        //add an if statement in case the ref.getauth().getuid() is null
-        if(ref.getAuth().getUid() == null) {
-            //launch the login activity
-            logOut(null);
-        }
+        //ensure we're properly logged in
+        if(ref.getAuth() == null) logOut(null);
 
         if(ref.getAuth().getProvider().equals("anonymous")) {
             Log.i(TAG,"anonymous user");
@@ -228,11 +225,11 @@ public class ControlActivity extends AppCompatActivity {
                         text_machine_status.setText(R.string.text_machine_open);
                         text_machine_status.setTextColor(getResources().getColor(R.color.green));
                     } else if(status == 1) {
-                        text_machine_status.setText(R.string.text_machine_running);
-                        text_machine_status.setTextColor(getResources().getColor(R.color.red));
-                    } else if(status == 2) {
                         text_machine_status.setText(R.string.text_machine_finished);
                         text_machine_status.setTextColor(getResources().getColor(R.color.gold));
+                    } else if(status == 2) {
+                        text_machine_status.setText(R.string.text_machine_running);
+                        text_machine_status.setTextColor(getResources().getColor(R.color.red));
                     }
                     else Log.i(TAG,"Somehow we have a status issue");
                 }

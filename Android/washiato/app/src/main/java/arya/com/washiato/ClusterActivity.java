@@ -14,12 +14,17 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.firebase.client.ChildEventListener;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
+import com.firebase.client.Query;
 import com.firebase.client.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Map;
 
 public class ClusterActivity extends AppCompatActivity {
@@ -94,30 +99,30 @@ public class ClusterActivity extends AppCompatActivity {
         }
 
         else if (ControlActivity.thisUser.containsKey("defaultCluster") && ControlActivity.getNfcStatus()== true){
-                //cluster is different from default cluster
-                currclusterName = (String) ControlActivity.thisUser.get("CurrCluster");
-                clusterName = currclusterName;
-                Log.i(TAG,clusterName);
-                    Log.i(TAG, "different cluster from default! getting data from " + clusterName);
+            //cluster is different from default cluster
+            currclusterName = (String) ControlActivity.thisUser.get("CurrCluster");
+            clusterName = currclusterName;
+            Log.i(TAG,clusterName);
+            Log.i(TAG, "different cluster from default! getting data from " + clusterName);
 
-                    ref.child("Clusters").child(clusterName).addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            //Store this in the cluster class
-                            clusterMap = (Map<String, Object>) dataSnapshot.getValue();
-                            Log.i(TAG, (String) clusterMap.get("location"));
-                            cluster.setLocation((String) clusterMap.get("location"));
-                            cluster.setNumDry((int) (long) clusterMap.get("numDry"));
-                            cluster.setNumWash((int) (long) clusterMap.get("numWash"));
-                            cluster.setMachines((ArrayList<String>) clusterMap.get("machines"));
-                            //update all the text views
-                            updateCluster();
-                        }
-                        @Override
-                        public void onCancelled(FirebaseError firebaseError) {
-                        }
-                    });
+            ref.child("Clusters").child(clusterName).addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    //Store this in the cluster class
+                    clusterMap = (Map<String, Object>) dataSnapshot.getValue();
+                    Log.i(TAG, (String) clusterMap.get("location"));
+                    cluster.setLocation((String) clusterMap.get("location"));
+                    cluster.setNumDry((int) (long) clusterMap.get("numDry"));
+                    cluster.setNumWash((int) (long) clusterMap.get("numWash"));
+                    cluster.setMachines((ArrayList<String>) clusterMap.get("machines"));
+                    //update all the text views
+                    updateCluster();
                 }
+                @Override
+                public void onCancelled(FirebaseError firebaseError) {
+                }
+            });
+        }
 
         ListView listView = (ListView) findViewById(R.id.listview_cluster);
         statusAdapter = new ClusterStatusAdapter(this, R.layout.cluster_status, machineList);
@@ -154,6 +159,67 @@ public class ClusterActivity extends AppCompatActivity {
             public void onCancelled(FirebaseError firebaseError) {
             }
         });
+        Query queryRef = ref.child("Machines").orderByChild("localCluster").equalTo(clusterName);
+        ChildEventListener clusterMachineListener;
+        clusterMachineListener = queryRef.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+//                System.out.println(dataSnapshot.getKey());
+                Machine machine = new Machine();
+                Map map = (Map<String,Object>) dataSnapshot.getValue();
+                if(map == null) Log.i(TAG,"fucker is null");
+                machine.setLocalCluster((String)map.get("localCluster"));
+                machine.setName((String)map.get("name"));
+                machine.setStatus((int)(long)map.get("status"));
+                machine.setWasher((boolean)map.get("washer"));
+                machineList.add(machine);
+                SortMachines();
+                statusAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                Map map = (Map<String,Object>) dataSnapshot.getValue();
+                if(map == null) Log.i(TAG,"fucker is null");
+                for(int i = 0; i < machineList.size(); i++) {
+                    //look for the one that has changed in machineList
+                    Machine machine = machineList.get(i);
+                    if(machine.getName().equals(map.get("name"))) {
+                        //update all the info
+                        machine.setLocalCluster((String)map.get("localCluster"));
+                        machine.setName((String)map.get("name"));
+                        machine.setStatus((int)(long)map.get("status"));
+                        machine.setWasher((boolean)map.get("washer"));
+                        machineList.remove(i); //remove the one that's in there
+                        machineList.add(machine); //add our updated one
+                        SortMachines(); //resort
+                        statusAdapter.notifyDataSetChanged();
+                        break;
+                    }
+                }
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {}
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {}
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {}
+        });
+    }
+
+    public void SortMachines() {
+        if(machineList.size() > 1) {
+            Log.i(TAG,"sorting");
+            Collections.sort(machineList, new Comparator<Machine>() {
+                @Override
+                public int compare(Machine m1, Machine m2) {
+                    return m1.status - m2.status;
+                }
+            });
+        }
     }
 
     public void updateMachines() {
@@ -161,6 +227,11 @@ public class ClusterActivity extends AppCompatActivity {
 
         //fill the array list with all the machines!
         Log.i(TAG,"number of machines: " + Integer.toString(cluster.machines.size()));
+
+
+
+
+
         for(int i = 0; i < cluster.machines.size(); i++) {
             Log.i(TAG,"filling number: " + Integer.toString(i)+", " + (String)cluster.machines.get(i));
 
@@ -177,6 +248,17 @@ public class ClusterActivity extends AppCompatActivity {
                     machine.setStatus((int)(long)map.get("status"));
                     machine.setWasher((boolean)map.get("washer"));
                     machineList.add(machine);
+
+                    if(machineList.size() > 1) {
+                        Log.i(TAG,"sorting");
+                        Collections.sort(machineList, new Comparator<Machine>() {
+                            @Override
+                            public int compare(Machine m1, Machine m2) {
+                                return m1.status - m2.status;
+                            }
+                        });
+                    }
+
                     statusAdapter.notifyDataSetChanged();
                 }
 

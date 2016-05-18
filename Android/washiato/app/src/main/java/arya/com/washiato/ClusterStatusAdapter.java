@@ -59,19 +59,19 @@ public class ClusterStatusAdapter extends ArrayAdapter {
                 else Picasso.with(context).load(R.mipmap.dry_open).into(holder.icon);
                 break;
             case 1:
+                holder.status.setText(R.string.text_machine_finished);
+//                holder.status.setText(ContextCompat.getColor(context, R.color.gold));
+                holder.time.setText(Integer.toString(thisMachine.getTime()) + " minutes ago");
+                if (thisMachine.getWasher()) Picasso.with(context).load(R.mipmap.wm_finished).into(holder.icon);
+                else Picasso.with(context).load(R.mipmap.dry_finished).into(holder.icon);
+                //maybe display time here?
+                break;
+            case 2:
                 holder.status.setText(R.string.text_machine_running);
 //                holder.status.setText(ContextCompat.getColor(context, R.color.red));
                 holder.time.setText("");
                 if (thisMachine.getWasher()) Picasso.with(context).load(R.mipmap.wm_running).into(holder.icon);
                 else Picasso.with(context).load(R.mipmap.dry_running).into(holder.icon);
-                break;
-            case 2:
-                holder.status.setText(R.string.text_machine_finished);
-//                holder.status.setText(ContextCompat.getColor(context, R.color.gold));
-
-                if (thisMachine.getWasher()) Picasso.with(context).load(R.mipmap.wm_finished).into(holder.icon);
-                else Picasso.with(context).load(R.mipmap.dry_finished).into(holder.icon);
-                //maybe display time here?
                 break;
         }
         return row;
