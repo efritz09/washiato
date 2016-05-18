@@ -59,7 +59,7 @@ public class Login extends AppCompatActivity {
             }
         } else Log.i(TAG,"not logged");
 
-        createMachines();
+        //createMachines();
         //set up the firebase connection progress dialog
         mAuthProgressDialog = new ProgressDialog(this);
         mAuthProgressDialog.setTitle("Loading");
@@ -149,14 +149,16 @@ public class Login extends AppCompatActivity {
             @Override
             public void onAuthenticated(AuthData authData) {
                 mAuthProgressDialog.hide();
-//                Log.i(TAG, "Anonymous authentication success");
+                Log.i(TAG, "Anonymous authentication success");
+                String cock = authData.getProvider();
+                Log.i(TAG,cock);
                 startActivity(intent); //start control activity
             }
 
             @Override
             public void onAuthenticationError(FirebaseError firebaseError) {
                 mAuthProgressDialog.hide();
-//                Log.i(TAG, "Anonymous authentication failure");
+                Log.i(TAG, "Anonymous authentication failure");
                 showErrorDialog(firebaseError.toString());
             }
         });

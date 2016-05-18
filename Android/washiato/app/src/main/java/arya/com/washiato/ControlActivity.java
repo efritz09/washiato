@@ -37,6 +37,7 @@ import com.firebase.client.ValueEventListener;
 
 import org.w3c.dom.Text;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class ControlActivity extends AppCompatActivity {
@@ -96,26 +97,34 @@ public class ControlActivity extends AppCompatActivity {
             logOut(null);
         }
 
-        //check to see if this user has used this shit before:
-        ref.child("Users").child(ref.getAuth().getUid()).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Log.i(TAG,"Checking for previous info");
-                thisUser = (Map<String, String>) dataSnapshot.getValue();
-                text_user.setText((String)thisUser.get("UserName"));
-                if(thisUser.containsKey("defaultCluster")) { //if default cluster already exists, set textview
-                    Log.i(TAG,"previous cluster exists");
-                    defClus = (String)thisUser.get("defaultCluster");
-                    text_cluster.setText("Default Cluster: " + defClus);
+        if(ref.getAuth().getProvider().equals("anonymous")) {
+            Log.i(TAG,"anonymous user");
+            text_cluster.setText("");
+            text_user.setText("Anonymous User!");
+            thisUser = new HashMap();
+            thisUser.put("UserName","anonymous");
+        }else {
+            //check to see if this user has used this shit before:
+            ref.child("Users").child(ref.getAuth().getUid()).addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    Log.i(TAG, "Checking for previous info");
+                    thisUser = (Map<String, String>) dataSnapshot.getValue();
+                    text_user.setText((String) thisUser.get("UserName"));
+                    if (thisUser.containsKey("defaultCluster")) { //if default cluster already exists, set textview
+                        Log.i(TAG, "previous cluster exists");
+                        defClus = (String) thisUser.get("defaultCluster");
+                        text_cluster.setText("Default Cluster: " + defClus);
+                    } else { //else textview is blank
+                        text_cluster.setText("Default Cluster: " + "Not set");
+                    }
                 }
-                else { //else textview is blank
-                    text_cluster.setText("Default Cluster: " + "Not set");
-                }
-            }
 
-            @Override
-            public void onCancelled(FirebaseError firebaseError) {}
-        });
+                @Override
+                public void onCancelled(FirebaseError firebaseError) {
+                }
+            });
+        }
 
     }
 
@@ -191,8 +200,14 @@ public class ControlActivity extends AppCompatActivity {
                         }
                     }
                     else { //NO default cluster set yet, hence add to Firebase and display in Control Activity
-                        ref.child("Users").child(ref.getAuth().getUid()).child("defaultCluster").setValue(cluster);
-                        text_cluster.setText("Default Cluster: " + cluster);
+                        if(ref.getAuth().getProvider().equals("anonymous")) {
+                            thisUser.put("CurrCluster",cluster);
+                            thisUser.put("defaultCluster",cluster);
+                            text_cluster.setText("Cluser: " + cluster);
+                        }else {
+                            ref.child("Users").child(ref.getAuth().getUid()).child("defaultCluster").setValue(cluster);
+                            text_cluster.setText("Default Cluster: " + cluster);
+                        }
                     }
                     //set the machine name:
                     text_machine.setText((String)thisMachine.get("name") + ": ");
