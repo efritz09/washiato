@@ -284,6 +284,7 @@ public class ControlActivity extends AppCompatActivity {
                 ref.removeEventListener(machine_listener);
             }
         }
+        is_nfc_detected = false;
         //open the login screen
         Intent intent = new Intent(this, Login.class);
         startActivity(intent);
