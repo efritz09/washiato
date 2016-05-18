@@ -12,8 +12,8 @@
 
 // Machine States
 #define MACHINE_UNOCCUPIED 0
-#define MACHINE_WASHING 1
-#define MACHINE_FINISHED 2
+#define MACHINE_WASHING 2
+#define MACHINE_FINISHED 1
 
 #define OMW_TIMER 0
 
