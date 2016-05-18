@@ -9,23 +9,36 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:showIn="@layout/activity_login">
 
+    <ImageView
+        android:id="@+id/washiato_logo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:src="@drawable/washiato_logo_white"
+        android:contentDescription="@string/washiato_logo"
+        android:cropToPadding="true"
+        android:scaleType="centerCrop"
+        android:layout_marginTop="30dp"/>
+
     <!--Text field for entering user name-->
     <EditText android:id="@+id/edit_name"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:textColor="@color/white"
         android:hint="@string/editText_username"
         android:textColorHint="@color/gray"
         android:text="admin@admin.com"
-        android:layout_marginTop="55dp"
-        android:layout_alignParentTop="true"
+        android:layout_marginTop="30dp"
+        android:singleLine="true"
+        android:layout_below="@+id/washiato_logo"
         android:layout_centerHorizontal="true"
-        android:singleLine="true" />
+        android:layout_marginStart="40dp"
+        android:layout_marginEnd="40dp"/>
 
     <!--Text field for entering password (hidden when entered)-->
     <EditText android:id="@+id/edit_password"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:textColor="@color/white"
@@ -52,7 +65,7 @@
 
     <!--LoginActivity confirm button-->
     <Button
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:text="@string/button_confirm_login"
@@ -60,26 +73,35 @@
         android:id="@+id/button_login"
         android:layout_below="@+id/ShowPwd"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp" />
+        android:layout_marginTop="20dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginEnd="40dp"
+        android:backgroundTint="@color/white"/>
 
     <!--Register button-->
     <Button
         android:id="@+id/register"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:text="@string/button_register"
         android:onClick="registerUser"
         android:layout_below="@+id/button_login"
-        android:layout_alignStart="@+id/button_login" />
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="40dp"
+        android:layout_marginEnd="40dp"
+        android:backgroundTint="@color/white"/>
 
     <Button
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/button_guest_login"
         android:onClick="anonLogin"
         android:layout_below="@id/register"
-        android:layout_centerHorizontal="true"/>
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="40dp"
+        android:layout_marginEnd="40dp"
+        android:backgroundTint="@color/white"/>
 
 </RelativeLayout>
 
