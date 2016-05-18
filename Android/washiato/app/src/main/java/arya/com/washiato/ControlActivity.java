@@ -3,6 +3,7 @@ package arya.com.washiato;
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -28,6 +29,7 @@ import android.nfc.tech.NfcF;
 import android.nfc.tech.NfcV;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.firebase.client.AuthData;
 import com.firebase.client.DataSnapshot;
@@ -67,6 +69,8 @@ public class ControlActivity extends AppCompatActivity {
     TextView text_machine_status;
     public static Map thisUser;
     public static boolean is_nfc_detected = false;
+    public static String serial;
+    final Context context = this; //Set context
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -172,7 +176,7 @@ public class ControlActivity extends AppCompatActivity {
     protected void onNewIntent(Intent intent) {
         if (intent.getAction().equals(NfcAdapter.ACTION_TAG_DISCOVERED)) {
             //Get serial number from NFC tag and convert to String
-            String serial = ByteArrayToHexString(intent.getByteArrayExtra(NfcAdapter.EXTRA_ID));
+            serial = ByteArrayToHexString(intent.getByteArrayExtra(NfcAdapter.EXTRA_ID));
             //Display NFC serial number
             ((TextView)findViewById(R.id.text_nfc_serial)).setText("NFC Tag\n" + serial);
 
@@ -180,8 +184,7 @@ public class ControlActivity extends AppCompatActivity {
             AuthData authData = ref.getAuth();
             //Push to Firebase (temporarily)
             ref.child("Users").child(authData.getUid()).child("Washer NFC Serial").setValue(serial);
-            is_nfc_detected = true;
-//            text_machine.setText(serial);
+            is_nfc_detected = true; // update nfc check variable
 
             //create a listener for changes in the system
             ref.child("Machines").child(serial).addValueEventListener(new ValueEventListener() {
@@ -235,12 +238,19 @@ public class ControlActivity extends AppCompatActivity {
         }
     }
 
+    //launches Cluster activity
     public void launchCluster(View view) {
         Log.i(TAG,"starting cluster activity");
         Intent intent = new Intent(this, ClusterActivity.class);
         startActivity(intent);
     }
 
+    //function implemented when "I'm on my way" button is pressed; updates omw variable under Machines in Firebase
+    public void omw(View view) {
+        Log.i(TAG,"OMW");
+        ref.child("Machines").child(serial).child("omw").setValue(1); //change omw variable under Machines in Firebase
+        Toast.makeText(context, getString(R.string.omw), Toast.LENGTH_LONG).show(); //show toast for OMW
+    }
 
     public void logOut(View view) {
         //log the user out
@@ -268,7 +278,6 @@ public class ControlActivity extends AppCompatActivity {
             }
         }else Log.i(TAG, "Location permission already granted!");
     }
-
 
     /*
     checkNFCon: Checks if NFC is on. Asks user to turn it on, opens the NFC settings
@@ -343,6 +352,7 @@ public class ControlActivity extends AppCompatActivity {
         }
     }
 
+    //function to check whether nfc has been triggered already
     public static boolean getNfcStatus() {
         if(is_nfc_detected == true){
             Log.i(TAG, "nfc detected");

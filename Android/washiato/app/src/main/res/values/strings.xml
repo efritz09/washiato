@@ -25,5 +25,5 @@
     <string name="text_machine_open">Open</string>
     <string name="text_machine_running">Running</string>
     <string name="text_machine_finished">Finished</string>
-
+    <string name="omw">On my way messages sent!</string>
 </resources>

@@ -59,8 +59,8 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="100dp"
-        android:layout_below="@id/text_machine_status"
+        android:layout_marginTop="60dp"
+        android:layout_below="@+id/button_omw"
         android:layout_alignStart="@id/text_user" />
 
     <Button
@@ -72,6 +72,16 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:onClick="launchCluster"/>
+
+    <Button
+        android:id="@+id/button_omw"
+        android:text="I'm on my way!"
+        android:layout_alignStart="@id/text_user"
+        android:layout_below="@+id/button_cluster"
+        android:layout_marginTop="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="omw"/>
 
     <Button
         android:id="@+id/button_logout"

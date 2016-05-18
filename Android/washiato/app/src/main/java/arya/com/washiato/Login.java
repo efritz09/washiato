@@ -176,14 +176,14 @@ public class Login extends AppCompatActivity {
 
     private void createMachines() {
         Log.i(TAG,"create the machines in firebase");
-        Machine mach1 = new Machine("Apollo","Olympus",0,true);
-        Machine mach2 = new Machine("Athena","Olympus",2,false);
-        Machine mach5 = new Machine("Zeus","Olympus",0,false);
-        Machine mach6 = new Machine("Ares","Olympus",1,true);
-        Machine mach3 = new Machine("Thor","Valhalla",1,true);
-        Machine mach4 = new Machine("Odin","Valhalla",2,false);
-        Machine mach7 = new Machine("Loki","Valhalla",0,true);
-        Machine mach8 = new Machine("Poseidon","Olympus",1,false);
+        Machine mach1 = new Machine("Apollo","Olympus",0,true,false,0);
+        Machine mach2 = new Machine("Athena","Olympus",2,false, false,0);
+        Machine mach5 = new Machine("Zeus","Olympus",0,false, false,0);
+        Machine mach6 = new Machine("Ares","Olympus",1,true, false,0);
+        Machine mach3 = new Machine("Thor","Valhalla",1,true, false,0);
+        Machine mach4 = new Machine("Odin","Valhalla",2,false, false,0);
+        Machine mach7 = new Machine("Loki","Valhalla",0,true, false,0);
+        Machine mach8 = new Machine("Poseidon","Olympus",1,false, false,0);
 
 
         ref.child("Machines").child("04457C8A6F4080").setValue(mach1);
