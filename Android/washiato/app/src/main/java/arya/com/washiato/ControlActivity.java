@@ -10,7 +10,6 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.renderscript.Sampler;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -36,10 +35,7 @@ import com.firebase.client.AuthData;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
-import com.firebase.client.Query;
 import com.firebase.client.ValueEventListener;
-
-import org.w3c.dom.Text;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -59,7 +55,6 @@ public class ControlActivity extends AppCompatActivity {
             }
     };
     public Firebase ref;
-//    private String serial;
     private static final String FIREBASE_URL = "https://washiato.firebaseio.com/";
     private final int MY_PERMISSIONS_REQUEST_LOCATION = 0;
     private static final String TAG = "ControlActivity";
@@ -188,13 +183,20 @@ public class ControlActivity extends AppCompatActivity {
             AuthData authData = ref.getAuth();
             //Push to Firebase (temporarily)
             ref.child("Users").child(authData.getUid()).child("Washer NFC Serial").setValue(serial);
-            is_nfc_detected = true; // update nfc check variable
+
 
             //create a listener for changes in the system
             machine_listener = ref.child("Machines").child(serial).addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     Map thisMachine = (Map<String, String>) dataSnapshot.getValue();
+                    if(thisMachine == null) {
+                        Log.i(TAG, "Unrecognized NFC tag scanned: " + serial);
+                        Toast.makeText(context, "No machine with this serial number found.", Toast.LENGTH_LONG).show();
+                        ((TextView)findViewById(R.id.text_nfc_serial)).setText("NFC Tag\n" + serial + "\n(Not found in database)");
+                        return;
+                    }
+                    is_nfc_detected = true; // update nfc check variable (only for registered machines)
                     String cluster = (String) thisMachine.get("localCluster");
                     Log.i(TAG, "found cluster: " + cluster);
                     if(thisUser.containsKey("defaultCluster")){//if default cluster already exists
@@ -285,7 +287,7 @@ public class ControlActivity extends AppCompatActivity {
         ClusterActivity.endClusterListeners();
         is_nfc_detected = false;
         //open the login screen
-        Intent intent = new Intent(this, Login.class);
+        Intent intent = new Intent(this, LoginActivity.class);
         startActivity(intent);
         finish();
     }

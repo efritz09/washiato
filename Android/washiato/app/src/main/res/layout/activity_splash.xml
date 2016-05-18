@@ -10,28 +10,27 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:adjustViewBounds="true"
-        android:src="@drawable/washiato"
         android:contentDescription="@string/washiato_splash_image"
         android:cropToPadding="true"
         android:scaleType="centerCrop"
-        android:layout_centerVertical="true"/>
+        android:layout_centerHorizontal="true"/>
 
-    <ProgressBar
-        android:id="@+id/progress_bar"
-        android:layout_width="wrap_content"
+    <ImageView
+        android:id="@+id/washiato_logo"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:indeterminate="true"
-        android:layout_below="@+id/splash_image"
-        android:layout_centerInParent="true"
-        android:progressTint="@color/black"/>
+        android:adjustViewBounds="true"
+        android:src="@drawable/washiato"
+        android:contentDescription="@string/washiato_logo"
+        android:cropToPadding="true"
+        android:scaleType="centerCrop"
+        android:layout_centerInParent="true"/>
 
-    <TextView
-        android:id="@+id/status_message"
-        android:layout_width="wrap_content"
+    <arya.com.washiato.helper.WaveView
+        android:id="@+id/wave_view"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/progress_bar"
         android:layout_centerInParent="true"
-        android:text="Blah"
-        android:textSize="36sp"/>
+        android:layout_margin="15dp"/>
 
 </RelativeLayout>

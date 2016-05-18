@@ -5,7 +5,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/black"
+    android:background="@color/colorPrimary"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:showIn="@layout/activity_login">
 
@@ -50,7 +50,7 @@
         android:layout_below="@+id/edit_password"
         android:layout_centerHorizontal="true" />
 
-    <!--Login confirm button-->
+    <!--LoginActivity confirm button-->
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

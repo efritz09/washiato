@@ -1,8 +1,6 @@
 package arya.com.washiato;
 
 import android.app.AlertDialog;
-import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -12,7 +10,6 @@ import android.widget.EditText;
 import android.widget.Toast;
 import android.support.v7.widget.Toolbar;
 
-import com.firebase.client.AuthData;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 
@@ -31,8 +28,8 @@ public class SignUpActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+//        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+//        setSupportActionBar(toolbar);
 
         //Create reference to firebase database
         ref = new Firebase(FIREBASE_URL);//.child("signups");
@@ -68,8 +65,8 @@ public class SignUpActivity extends AppCompatActivity {
                         public void onSuccess(Map<String, Object> result) {
                             Log.i(TAG, "Successful signup");
                             Toast.makeText(getApplicationContext(), "Account Successfully Created!", Toast.LENGTH_LONG).show();
-                            Login.username.setText(username);
-                            Login.password.setText(password);
+                            LoginActivity.username.setText(username);
+                            LoginActivity.password.setText(password);
                             finish();
                         }
 

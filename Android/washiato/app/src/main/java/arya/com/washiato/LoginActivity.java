@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.method.HideReturnsTransformationMethod;
@@ -15,7 +16,6 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.firebase.client.AuthData;
 import com.firebase.client.Firebase;
@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Login extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity {
     //Declare module level object variables needed
     CheckBox checkbox;
     public static EditText password;
@@ -44,8 +44,13 @@ public class Login extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+
+        // Hide the action bar if it's visible
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.hide();
+        }
+
         //Create a reference to firebase database
         ref = new Firebase(FIREBASE_URL);
 
@@ -54,7 +59,7 @@ public class Login extends AppCompatActivity {
         if(washiato.preferences.getBoolean(getString(R.string.pref_logged_in),false)) {
             if(ref.getAuth() != null) {
                 Log.i(TAG, "Logged in");
-                Intent Successful_login = new Intent(Login.this, ControlActivity.class);
+                Intent Successful_login = new Intent(LoginActivity.this, ControlActivity.class);
                 startActivity(Successful_login);
                 finish();
             }
