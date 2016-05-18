@@ -210,7 +210,7 @@ public class ControlActivity extends AppCompatActivity {
                         if(ref.getAuth().getProvider().equals("anonymous")) {
                             thisUser.put("CurrCluster",cluster);
                             thisUser.put("defaultCluster",cluster);
-                            text_cluster.setText("Cluser: " + cluster);
+                            text_cluster.setText("Cluster: " + cluster);
                         }else {
                             ref.child("Users").child(ref.getAuth().getUid()).child("defaultCluster").setValue(cluster);
                             text_cluster.setText("Default Cluster: " + cluster);
@@ -281,6 +281,8 @@ public class ControlActivity extends AppCompatActivity {
                 ref.removeEventListener(machine_listener);
             }
         }
+        //remove listeners in the cluster
+        ClusterActivity.endClusterListeners();
         is_nfc_detected = false;
         //open the login screen
         Intent intent = new Intent(this, Login.class);

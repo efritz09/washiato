@@ -29,7 +29,7 @@ import java.util.Map;
 
 public class ClusterActivity extends AppCompatActivity {
     private final String TAG = "ClusterActivity";
-    public Firebase ref;
+    public static Firebase ref;
     private static final String FIREBASE_URL = "https://washiato.firebaseio.com/";
     public Cluster cluster = new Cluster();
     public Map<String,Object> clusterMap;
@@ -38,6 +38,9 @@ public class ClusterActivity extends AppCompatActivity {
     public static String clusterName;
     public ArrayList<Machine> machineList;
     public ClusterStatusAdapter statusAdapter;
+
+    static ChildEventListener clusterMachineListener;
+    static ValueEventListener clusterStatusListener;
 
     TextView text_cluster_name;
     TextView text_cluster_location;
@@ -105,7 +108,7 @@ public class ClusterActivity extends AppCompatActivity {
             Log.i(TAG,clusterName);
             Log.i(TAG, "different cluster from default! getting data from " + clusterName);
 
-            ref.child("Clusters").child(clusterName).addValueEventListener(new ValueEventListener() {
+            clusterStatusListener = ref.child("Clusters").child(clusterName).addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     //Store this in the cluster class
@@ -147,20 +150,20 @@ public class ClusterActivity extends AppCompatActivity {
         text_cluster_washers_available.setText(Integer.toString(cluster.getNumWash()) + " washers available");
 
         //this is here to prevent the machine from updating before the cluster in the event of a cluster change
-        ref.child("Machines").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Log.i(TAG, "updating machines");
-                //update the machines in the listview
-                updateMachines();
-            }
-
-            @Override
-            public void onCancelled(FirebaseError firebaseError) {
-            }
-        });
+//        ref.child("Machines").addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                Log.i(TAG, "updating machines");
+//                //update the machines in the listview
+//                updateMachines();
+//            }
+//
+//            @Override
+//            public void onCancelled(FirebaseError firebaseError) {
+//            }
+//        });
+        //now that the cluster is ready, populate the machines
         Query queryRef = ref.child("Machines").orderByChild("localCluster").equalTo(clusterName);
-        ChildEventListener clusterMachineListener;
         clusterMachineListener = queryRef.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
@@ -172,6 +175,8 @@ public class ClusterActivity extends AppCompatActivity {
                 machine.setName((String)map.get("name"));
                 machine.setStatus((int)(long)map.get("status"));
                 machine.setWasher((boolean)map.get("washer"));
+                machine.setTime((int)(long)map.get("time"));
+                machine.setOmw((boolean)map.get("omw"));
                 machineList.add(machine);
                 SortMachines();
                 statusAdapter.notifyDataSetChanged();
@@ -190,6 +195,8 @@ public class ClusterActivity extends AppCompatActivity {
                         machine.setName((String)map.get("name"));
                         machine.setStatus((int)(long)map.get("status"));
                         machine.setWasher((boolean)map.get("washer"));
+                        machine.setTime((int)(long)map.get("time"));
+                        machine.setOmw((boolean)map.get("omw"));
                         machineList.remove(i); //remove the one that's in there
                         machineList.add(machine); //add our updated one
                         SortMachines(); //resort
@@ -200,7 +207,17 @@ public class ClusterActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {}
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+                Map map = (Map<String,Object>) dataSnapshot.getValue();
+                for(int i = 0; i < machineList.size(); i++) {
+                    Machine machine = machineList.get(i);
+                    if(machine.getName().equals(map.get("name"))) {
+                        machineList.remove(i); //remove the one that's in there
+                        statusAdapter.notifyDataSetChanged();
+                        break;
+                    }
+                }
+            }
 
             @Override
             public void onChildMoved(DataSnapshot dataSnapshot, String s) {}
@@ -222,52 +239,59 @@ public class ClusterActivity extends AppCompatActivity {
         }
     }
 
-    public void updateMachines() {
-        machineList.clear();
-
-        //fill the array list with all the machines!
-        Log.i(TAG,"number of machines: " + Integer.toString(cluster.machines.size()));
-
-
-
-
-
-        for(int i = 0; i < cluster.machines.size(); i++) {
-            Log.i(TAG,"filling number: " + Integer.toString(i)+", " + (String)cluster.machines.get(i));
-
-            //we may want to change this to .addValueEventListener. I don't know yet
-            ref.child("Machines").child(cluster.machines.get(i)).addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    //populate the "machineList" for the listView
-                    Machine machine = new Machine();
-                    Map map = (Map<String,Object>) dataSnapshot.getValue();
-                    if(map == null) Log.i(TAG,"fucker is null");
-                    machine.setLocalCluster((String)map.get("localCluster"));
-                    machine.setName((String)map.get("name"));
-                    machine.setStatus((int)(long)map.get("status"));
-                    machine.setWasher((boolean)map.get("washer"));
-                    machineList.add(machine);
-
-                    if(machineList.size() > 1) {
-                        Log.i(TAG,"sorting");
-                        Collections.sort(machineList, new Comparator<Machine>() {
-                            @Override
-                            public int compare(Machine m1, Machine m2) {
-                                return m1.status - m2.status;
-                            }
-                        });
-                    }
-
-                    statusAdapter.notifyDataSetChanged();
-                }
-
-                @Override
-                public void onCancelled(FirebaseError firebaseError) {}
-            });
-        }
-
+    public static void endClusterListeners() {
+        Log.i("ClusterActivity","removing listeners");
+        if(clusterMachineListener != null) ref.removeEventListener(clusterMachineListener);
+        if(clusterStatusListener != null) ref.removeEventListener(clusterStatusListener);
     }
+
+
+//    public void updateMachines() {
+//        machineList.clear();
+//
+//        //fill the array list with all the machines!
+//        Log.i(TAG,"number of machines: " + Integer.toString(cluster.machines.size()));
+//
+//
+//
+//
+//
+//        for(int i = 0; i < cluster.machines.size(); i++) {
+//            Log.i(TAG,"filling number: " + Integer.toString(i)+", " + (String)cluster.machines.get(i));
+//
+//            //we may want to change this to .addValueEventListener. I don't know yet
+//            ref.child("Machines").child(cluster.machines.get(i)).addListenerForSingleValueEvent(new ValueEventListener() {
+//                @Override
+//                public void onDataChange(DataSnapshot dataSnapshot) {
+//                    //populate the "machineList" for the listView
+//                    Machine machine = new Machine();
+//                    Map map = (Map<String,Object>) dataSnapshot.getValue();
+//                    if(map == null) Log.i(TAG,"fucker is null");
+//                    machine.setLocalCluster((String)map.get("localCluster"));
+//                    machine.setName((String)map.get("name"));
+//                    machine.setStatus((int)(long)map.get("status"));
+//                    machine.setWasher((boolean)map.get("washer"));
+//                    machineList.add(machine);
+//
+//                    if(machineList.size() > 1) {
+//                        Log.i(TAG,"sorting");
+//                        Collections.sort(machineList, new Comparator<Machine>() {
+//                            @Override
+//                            public int compare(Machine m1, Machine m2) {
+//                                return m1.status - m2.status;
+//                            }
+//                        });
+//                    }
+//
+//                    statusAdapter.notifyDataSetChanged();
+//                }
+//
+//                @Override
+//                public void onCancelled(FirebaseError firebaseError) {}
+//            });
+//        }
+//
+//    }
 
     //Debugging cluster view: function when button stat1 is pressed; changes status of a machine in Firebase
     public void changeStat1(View view) {

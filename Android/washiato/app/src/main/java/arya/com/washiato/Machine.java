@@ -55,6 +55,6 @@ public class Machine {
     }
     public void setStatus(int status) { this.status = status; }
     public void setOmw(boolean omw) { this.omw = omw; }
-    //public void setTime(int time) { this.time = time; }
+    public void setTime(int time) { this.time = time; }
 }
 
