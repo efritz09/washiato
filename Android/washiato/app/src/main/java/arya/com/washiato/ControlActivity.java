@@ -3,14 +3,19 @@ package arya.com.washiato;
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.TaskStackBuilder;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -28,6 +33,7 @@ import android.nfc.tech.NfcB;
 import android.nfc.tech.NfcF;
 import android.nfc.tech.NfcV;
 import android.view.View;
+import android.widget.RemoteViews;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,6 +43,8 @@ import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
 
+import java.text.DateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -89,10 +97,12 @@ public class ControlActivity extends AppCompatActivity {
         checkPermissions(this); //check the permissions
 
         //check to see if we should ask about NFC (first see if NFC is supported)
-        if(washiato.preferences.getBoolean(getString(R.string.nfc_supported),true)
-            && !washiato.preferences.getBoolean(getString(R.string.pref_nfc),false)) {
-            Log.i(TAG, "asking about NFC");
-            checkNFCon(); //check to see if NFC is on
+        if(washiato.preferences != null) {
+            if(washiato.preferences.getBoolean(getString(R.string.nfc_supported),true)
+                && !washiato.preferences.getBoolean(getString(R.string.pref_nfc),false)) {
+                Log.i(TAG, "asking about NFC");
+                checkNFCon(); //check to see if NFC is on
+            }
         }
 
         //ensure we're properly logged in
@@ -148,6 +158,7 @@ public class ControlActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+
         if(washiato.preferences.getBoolean(getString(R.string.nfc_supported),false)) {
             // creating pending intent:
             PendingIntent pendingIntent = PendingIntent.getActivity(this, 0,
@@ -173,7 +184,8 @@ public class ControlActivity extends AppCompatActivity {
 
     @Override
     protected void onNewIntent(Intent intent) {
-        if (intent.getAction().equals(NfcAdapter.ACTION_TAG_DISCOVERED)) {
+        if(intent.getAction() == null) Log.i(TAG,"null action");
+        else if (intent.getAction().equals(NfcAdapter.ACTION_TAG_DISCOVERED)) {
             //Get serial number from NFC tag and convert to String
             serial = ByteArrayToHexString(intent.getByteArrayExtra(NfcAdapter.EXTRA_ID));
             //Display NFC serial number
@@ -229,6 +241,7 @@ public class ControlActivity extends AppCompatActivity {
                     } else if(status == 1) {
                         text_machine_status.setText(R.string.text_machine_finished);
                         text_machine_status.setTextColor(getResources().getColor(R.color.gold));
+                        createNotification();
                     } else if(status == 2) {
                         text_machine_status.setText(R.string.text_machine_running);
                         text_machine_status.setTextColor(getResources().getColor(R.color.red));
@@ -255,7 +268,7 @@ public class ControlActivity extends AppCompatActivity {
     public void omw(View view) {
         Log.i(TAG,"OMW");
         if(getNfcStatus()==true){
-            ref.child("Machines").child(serial).child("omw").setValue(1); //change omw variable under Machines in Firebase
+            ref.child("Machines").child(serial).child("omw").setValue(true); //change omw variable under Machines in Firebase
             Toast.makeText(context, getString(R.string.omw), Toast.LENGTH_LONG).show(); //show toast for OMW
         }
         else {
@@ -417,6 +430,53 @@ public class ControlActivity extends AppCompatActivity {
             out += hex[i];
         }
         return out;
+    }
+
+    /* notification area */
+    public void createNotification() {
+        long[] pattern = new long[6]; //pattern is fucky
+        pattern[0] = 80;
+        pattern[1] = 200;
+        pattern[2] = 80;
+        pattern[3] = 200;
+        pattern[4] = 2000;
+        pattern[5] = 200;
+        Vibrator v = (Vibrator) this.context.getSystemService(Context.VIBRATOR_SERVICE);
+        v.vibrate(pattern,-1);
+        Log.i(TAG,"setting up notification");
+
+
+        final String time = DateFormat.getTimeInstance().format(new Date()).toString();
+        NotificationCompat.Builder mBuilder =
+                new NotificationCompat.Builder(this)
+                        .setSmallIcon(R.mipmap.wm_finished)
+                        .setContentTitle("Your Machine Has Finished!")
+                        .setContentText("Completed at " + time)
+                        .setAutoCancel(true)
+                        .setLights(getResources().getColor(R.color.blue),500,500); //doesn't work
+// Creates an explicit intent for an Activity in your app
+        Intent resultIntent = new Intent(this, ControlActivity.class);
+
+// The stack builder object will contain an artificial back stack for the
+// started Activity.
+// This ensures that navigating backward from the Activity leads out of
+// your application to the Home screen.
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+// Adds the back stack for the Intent (but not the Intent itself)
+        stackBuilder.addParentStack(ControlActivity.class);
+// Adds the Intent that starts the Activity to the top of the stack
+        stackBuilder.addNextIntent(resultIntent);
+        PendingIntent resultPendingIntent =
+                stackBuilder.getPendingIntent(
+                        0,
+                        PendingIntent.FLAG_UPDATE_CURRENT
+                );
+        mBuilder.setContentIntent(resultPendingIntent);
+        NotificationManager mNotificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+// mId allows you to update the notification later on.
+
+        mNotificationManager.notify(1, mBuilder.build());
     }
 
 }

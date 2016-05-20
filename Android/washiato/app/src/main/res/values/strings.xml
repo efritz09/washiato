@@ -29,4 +29,5 @@
     <string name="nfc_supported">NFC_SUPPORTED</string>
     <string name="no_connection">Sorry! You are not currently connected to a machine</string>
     <string name="washiato_logo">washiato logo</string>
+
 </resources>
