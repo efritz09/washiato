@@ -15,22 +15,20 @@
 #define MACHINE_WASHING 2
 #define MACHINE_FINISHED 1
 
-#define OMW_TIMER 0
-
 // Some Constants
-#define Window_Samples 5000
-#define UPPER_ACCEL_THRESHOLD 200
-#define LOWER_ACCEL_THRESHOLD 800
-#define DOOR_THRESHOLD 500000
+#define Window_Samples 250
+#define UPPER_ACCEL_THRESHOLD 2000
+#define LOWER_ACCEL_THRESHOLD 1500
+#define DOOR_THRESHOLD 50000
 #define RMS_CAP 10000
 #define ONE_MIN 60000
 
 
 // NEED TO BE CHANGED FOR INDIVIDUAL DEVICES!!!
 String NFC_ID = "04457C8A6F4080";
-const char* ssid = "Stanford Residences";
+//const char* ssid = "Stanford Residences";
 
-//const char* ssid = "washiato";
+const char* ssid = "washiato";
 //const char* pwd = "washiato";
 
 // Module level variables
@@ -103,8 +101,7 @@ void setup() {
 
   // Set FB and LCD statuses
   setFBStatus(MACHINE_UNOCCUPIED);
-  setLCDStatus(MACHINE_UNOCCUPIED);
-  digitalWrite(BACKLIGHT_PIN, LOW);  
+  setLCDStatus(MACHINE_UNOCCUPIED); 
 }
 
 // Main loop containing SM
@@ -135,10 +132,10 @@ void loop() {
       NextMachineState = MACHINE_FINISHED;
       setFBStatus(MACHINE_FINISHED);
       setLCDStatus(MACHINE_FINISHED);
-      digitalWrite(BACKLIGHT_PIN, HIGH);
       lastEvent = millis();
       lastCompleteTime = millis();
       setFBTime(0);
+      resetOMWStatus();
     }
     break;
     
@@ -150,7 +147,6 @@ void loop() {
         setFBStatus(MACHINE_UNOCCUPIED);
         setLCDStatus(MACHINE_UNOCCUPIED);
         resetOMWStatus();
-        digitalWrite(BACKLIGHT_PIN, LOW);
         lastEvent = millis();
         lastOMWStatus = false;
         setFBTime(0);
@@ -236,7 +232,7 @@ void checkMovement(void) {
       z_s = z_s - (z_s/(Window_Samples)) + (z_diff/(Window_Samples));
     }
 
-    //Serial.println(sqrt(sq(x_s)+sq(y_s)+sq(z_s)));
+    Serial.println(sqrt(sq(x_s)+sq(y_s)+sq(z_s)));
     
   }
 
@@ -244,11 +240,11 @@ void checkMovement(void) {
   isMoving = (sqrt(sq(x_s)+sq(y_s)+sq(z_s)) > Accel_Var_Threshold);
 
   // Introduce software hysteresis so we don't flip back and forth
-//  if (isMoving) {
-//    Accel_Var_Threshold = LOWER_ACCEL_THRESHOLD;
-//  } else {
-//    Accel_Var_Threshold = UPPER_ACCEL_THRESHOLD;
-//  }
+  if (isMoving) {
+    Accel_Var_Threshold = LOWER_ACCEL_THRESHOLD;
+  } else {
+    Accel_Var_Threshold = UPPER_ACCEL_THRESHOLD;
+  }
   
   return;
 }
