@@ -66,22 +66,12 @@
         android:id="@+id/btn_login"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="10dp"
         android:layout_marginStart="40dp"
         android:layout_marginEnd="40dp"
         android:backgroundTint="@color/white"
         android:text="@string/button_confirm_login"
         android:textColor="@color/colorAccentDark"/>
-
-    <TextView android:id="@+id/forgot_password"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="Forgot Password?"
-        android:gravity="center"
-        android:textSize="16sp"
-        android:layout_marginTop="8dp"
-        android:textColor="@color/colorAccentDark"/>
-
 
     <!-- Or divider -->
     <RelativeLayout
@@ -119,6 +109,7 @@
 
     </RelativeLayout>
 
+    <!-- Guest login button -->
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -131,14 +122,35 @@
         android:backgroundTint="@color/white"
         android:textColor="@color/colorAccentDark" />
 
-    <TextView android:id="@+id/link_signup"
-        android:layout_width="fill_parent"
+
+    <!-- Forgot password and sign up links -->
+    <RelativeLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Sign up!"
-        android:gravity="center"
-        android:textSize="16sp"
-        android:layout_marginTop="20dp"
-        android:textColor="@color/colorAccentDark" />
+        android:orientation="horizontal"
+        android:layout_marginTop="40dp"
+        android:layout_marginLeft="50dp"
+        android:layout_marginRight="50dp">
+
+        <TextView android:id="@+id/forgot_password"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Forgot Password?"
+            android:gravity="left"
+            android:textSize="16sp"
+            android:layout_marginEnd="10dp"
+            android:textColor="@color/colorAccentDark"/>
+
+        <TextView android:id="@+id/link_signup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Sign up!"
+            android:gravity="right"
+            android:textSize="16sp"
+            android:layout_toRightOf="@id/forgot_password"
+            android:textColor="@color/colorAccentDark" />
+
+    </RelativeLayout>
 
 </LinearLayout>
 

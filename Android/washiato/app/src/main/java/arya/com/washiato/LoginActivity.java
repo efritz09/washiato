@@ -142,7 +142,8 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void onAuthenticationError(FirebaseError firebaseError) {
-                mAuthProgressDialog.hide();
+                mAuthProgressDialog.cancel();
+                //mAuthProgressDialog.hide();
                 Log.e("LaunchActivity", "Error logging in");
                 showErrorDialog(firebaseError.toString());
             }
@@ -155,7 +156,8 @@ public class LoginActivity extends AppCompatActivity {
         ref.authAnonymously(new Firebase.AuthResultHandler() {
             @Override
             public void onAuthenticated(AuthData authData) {
-                mAuthProgressDialog.hide();
+                mAuthProgressDialog.cancel();
+                //mAuthProgressDialog.hide();
                 Log.i(TAG, "Anonymous authentication success");
                 String auth = authData.getProvider();
                 Log.i(TAG,auth);
@@ -164,7 +166,8 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void onAuthenticationError(FirebaseError firebaseError) {
-                mAuthProgressDialog.hide();
+                mAuthProgressDialog.cancel();
+                //mAuthProgressDialog.hide();
                 Log.i(TAG, "Anonymous authentication failure");
                 showErrorDialog(firebaseError.toString());
             }
