@@ -1,0 +1,63 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/colorPrimary"
+    tools:context=".fragments.DryerFragment">
+
+    <ImageView
+        android:id="@+id/image"
+        android:src="@drawable/washiato_logo_white"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginEnd="40dp"
+        android:layout_gravity="center_horizontal" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:text="Dryer Status"
+        android:textSize="16dp"
+        android:paddingTop="10dp"
+        android:textColor="@color/colorAccentDark"/>
+
+    <TextView
+        android:id="@+id/ble_status"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:text="Dryer Off"
+        android:textSize="12dp"
+        android:textColor="@color/colorAccentDark"/>
+
+    <Button
+        android:id="@+id/alarmOn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:text="Turn on"
+        android:layout_gravity="center_horizontal|bottom"
+        android:textColor="@color/colorAccentDark"
+        android:backgroundTint="@color/white"/>
+
+    <Button
+        android:id="@+id/alarmOff"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:text="Turn off"
+        android:layout_gravity="center_horizontal|bottom"
+        android:textColor="@color/colorAccentDark"
+        android:backgroundTint="@color/white"/>
+
+</LinearLayout>
+

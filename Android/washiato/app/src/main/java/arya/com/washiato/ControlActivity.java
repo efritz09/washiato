@@ -253,6 +253,13 @@ public class ControlActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    //launches Tab activity
+    public void launchTab(View view) {
+        Log.i(TAG,"starting tab activity");
+        Intent intent = new Intent(this, TabActivity.class);
+        startActivity(intent);
+    }
+
     //function implemented when "I'm on my way" button is pressed; updates omw variable under Machines in Firebase
     public void omw(View view) {
         Log.i(TAG,"OMW");
