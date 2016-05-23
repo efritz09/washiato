@@ -167,8 +167,10 @@ public class ControlActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         // disabling foreground dispatch:
-        NfcAdapter nfcAdapter = NfcAdapter.getDefaultAdapter(this);
-        nfcAdapter.disableForegroundDispatch(this);
+        if(washiato.preferences.getBoolean(getString(R.string.nfc_supported),false)) {
+            NfcAdapter nfcAdapter = NfcAdapter.getDefaultAdapter(this);
+            nfcAdapter.disableForegroundDispatch(this);
+        }
     }
 
     @Override
@@ -255,7 +257,7 @@ public class ControlActivity extends AppCompatActivity {
     public void omw(View view) {
         Log.i(TAG,"OMW");
         if(getNfcStatus()==true){
-            ref.child("Machines").child(serial).child("omw").setValue(1); //change omw variable under Machines in Firebase
+            ref.child("Machines").child(serial).child("omw").setValue(true); //change omw variable under Machines in Firebase
             Toast.makeText(context, getString(R.string.omw), Toast.LENGTH_LONG).show(); //show toast for OMW
         }
         else {
