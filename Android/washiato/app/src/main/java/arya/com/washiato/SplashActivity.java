@@ -112,7 +112,7 @@ public class SplashActivity extends AppCompatActivity {
 
         // Animation wave
         mWaveView = (WaveView) findViewById(R.id.wave_view);
-        mWaveView.setBorder(mBorderWidth, mBorderColor);
+        //mWaveView.setBorder(mBorderWidth, mBorderColor);
         mWaveView.setShowWave(true);
 
         ObjectAnimator waveShiftAnim = ObjectAnimator.ofFloat(
