@@ -6,7 +6,7 @@ package arya.com.washiato;
 public class Machine {
     String name;
     String localCluster;
-    int status;
+    public int status;
     boolean washer;
     boolean omw; //whether or not user is on their way
     int time; //time since user is on their way
