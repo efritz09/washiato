@@ -32,7 +32,7 @@ import java.util.Map;
 public class LoginActivity extends AppCompatActivity {
 
     private static final String TAG = "LoginActivity";
-    private static final boolean RESET_FIREBASE_CLUSTERS = false;
+    private static final boolean RESET_FIREBASE_CLUSTERS = true;
     private static final String FIREBASE_URL = "https://washiato.firebaseio.com/";
     public Firebase ref;
 
@@ -278,22 +278,36 @@ public class LoginActivity extends AppCompatActivity {
         Log.i(TAG,"create the machines in firebase");
         Machine mach1 = new Machine("Apollo","Olympus",0,true,false,0);
         Machine mach2 = new Machine("Athena","Olympus",2,false, false,0);
+        Machine mach3 = new Machine("Artemis","Olympus",1,true, false,0);
+        Machine mach4 = new Machine("Aphrodite","Olympus",1,true, false,0);
         Machine mach5 = new Machine("Zeus","Olympus",0,false, false,0);
         Machine mach6 = new Machine("Ares","Olympus",1,true, false,5);
-        Machine mach3 = new Machine("Thor","Valhalla",1,true, false,5);
-        Machine mach4 = new Machine("Odin","Valhalla",2,false, false,0);
-        Machine mach7 = new Machine("Loki","Valhalla",0,true, false,0);
+        Machine mach7 = new Machine("Dionysus","Olympus",2,false, false,0);
         Machine mach8 = new Machine("Poseidon","Olympus",1,false, false,10);
+        Machine mach9 = new Machine("Hera","Olympus",1,false, false,10);
+        Machine mach10 = new Machine("Hephaestus","Olympus",2,true, false,0);
+        Machine mach11 = new Machine("Hermes","Olympus",2,true, false,0);
+        Machine mach12 = new Machine("Demeter","Olympus",2,false, false,0);
+        Machine mach13 = new Machine("Thor","Valhalla",1,true, false,5);
+        Machine mach14 = new Machine("Odin","Valhalla",2,false, false,0);
+        Machine mach15 = new Machine("Loki","Valhalla",0,true, false,0);
 
 
         ref.child("Machines").child("04457C8A6F4080").setValue(mach1);
         ref.child("Machines").child("044D5B8A6F4080").setValue(mach2);
-        ref.child("Machines").child("04F72452783F80").setValue(mach3);
-        ref.child("Machines").child("04CF3652783F80").setValue(mach4);
+        ref.child("Machines").child("005").setValue(mach3);
+        ref.child("Machines").child("006").setValue(mach4);
         ref.child("Machines").child("666xx666").setValue(mach5);
         ref.child("Machines").child("666666").setValue(mach6);
-        ref.child("Machines").child("04F2C58A6F4080").setValue(mach7);
+        ref.child("Machines").child("004").setValue(mach7);
         ref.child("Machines").child("6666").setValue(mach8);
+        ref.child("Machines").child("001").setValue(mach9);
+        ref.child("Machines").child("002").setValue(mach10);
+        ref.child("Machines").child("003").setValue(mach11);
+        ref.child("Machines").child("007").setValue(mach12);
+        ref.child("Machines").child("04F72452783F80").setValue(mach13);
+        ref.child("Machines").child("04CF3652783F80").setValue(mach14);
+        ref.child("Machines").child("04F2C58A6F4080").setValue(mach15);
 
         ArrayList<String> mach_array = new ArrayList<String>();
         mach_array.add("6666");
@@ -301,6 +315,13 @@ public class LoginActivity extends AppCompatActivity {
         mach_array.add("666xx666");
         mach_array.add("044D5B8A6F4080");
         mach_array.add("04457C8A6F4080");
+        mach_array.add("001");
+        mach_array.add("002");
+        mach_array.add("003");
+        mach_array.add("004");
+        mach_array.add("005");
+        mach_array.add("006");
+        mach_array.add("007");
 
         ArrayList<String> mach_array2 = new ArrayList<String>();
         mach_array2.add("04F72452783F80");
