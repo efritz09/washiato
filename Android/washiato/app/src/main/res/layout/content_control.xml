@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="@color/colorPrimary"
     tools:showIn="@layout/activity_control">
 
     <TextView
@@ -13,7 +14,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="70dp"
-        android:layout_marginLeft="10dp"
+        android:layout_marginLeft="20dp"
         android:layout_alignParentTop="true"
         android:layout_alignParentStart="true" />
 
@@ -39,6 +40,7 @@
         android:id="@+id/text_machine"
         android:text="Not currently connected"
         android:textAppearance="?android:attr/textAppearanceLarge"
+        android:layout_marginTop="20dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/text_cluster_current"
@@ -50,10 +52,24 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text=""
         android:id="@+id/text_machine_status"
+        android:layout_marginEnd="20dp"
         android:layout_toRightOf="@id/text_machine"
         android:layout_alignTop="@id/text_machine"/>
 
+
     <TextView
+        android:id="@+id/text_time"
+        android:layout_centerHorizontal="true"
+        android:text=""
+        android:layout_below="@id/text_machine_status"
+        android:layout_toRightOf="@id/text_machine"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        />
+
+
+<!--    <TextView
         android:id="@+id/text_nfc_serial"
         android:text="nfc results"
         android:textAppearance="?android:attr/textAppearanceLarge"
@@ -61,47 +77,57 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="60dp"
         android:layout_below="@+id/button_omw"
-        android:layout_alignStart="@id/text_user" />
+        android:layout_alignStart="@id/text_user" />-->
 
     <Button
         android:id="@+id/button_cluster"
         android:text="Cluster Status"
-        android:layout_alignStart="@id/text_user"
-        android:layout_below="@+id/text_machine_status"
-        android:layout_marginTop="20dp"
-        android:layout_width="wrap_content"
+        android:layout_width="250dp"
         android:layout_height="wrap_content"
-        android:onClick="launchCluster"/>
+        android:onClick="launchCluster"
+        android:backgroundTint="@color/white"
+        android:textColor="@color/colorAccentDark"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"/>
 
     <Button
         android:id="@+id/button_omw"
         android:text="I'm on my way!"
-        android:layout_alignStart="@id/text_user"
+        android:visibility="invisible"
+        android:layout_alignStart="@id/button_cluster"
+        android:layout_alignEnd="@id/button_cluster"
         android:layout_below="@+id/button_cluster"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="40dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:onClick="omw"/>
+        android:onClick="omw"
+        android:backgroundTint="@color/white"
+        android:textColor="@color/colorAccentDark" />
 
     <Button
         android:id="@+id/button_logout"
-        android:layout_width="wrap_content"
+        android:layout_width="120dp"
         android:layout_height="wrap_content"
         android:text="Log out"
         android:onClick="logOut"
-        android:layout_alignTop="@+id/button_nfc"
-        android:layout_alignStart="@id/text_user"/>
+        android:layout_marginStart="10dp"
+        android:layout_marginBottom="30dp"
+        android:layout_alignParentBottom="true"
+        android:backgroundTint="@color/white"
+        android:textColor="@color/colorAccentDark" />
 
     <Button
         android:id="@+id/button_nfc"
-        android:layout_width="wrap_content"
+        android:layout_width="120dp"
         android:layout_height="wrap_content"
         android:text="Turn on NFC"
         android:onClick="launchNFC"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true"
+        android:layout_alignTop="@id/button_logout"
         android:layout_marginEnd="10dp"
-        android:layout_marginBottom="30dp" />
+        android:layout_alignParentEnd="true"
+        android:backgroundTint="@color/white"
+        android:textColor="@color/colorAccentDark"
+        android:visibility="invisible" />
 
     <Button
         android:id="@+id/launch_tabs"
@@ -110,7 +136,10 @@
         android:layout_centerHorizontal="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:onClick="launchTab"/>
+        android:onClick="launchTab"
+        android:backgroundTint="@color/white"
+        android:textColor="@color/colorAccentDark" />
+
 
 
 </RelativeLayout>

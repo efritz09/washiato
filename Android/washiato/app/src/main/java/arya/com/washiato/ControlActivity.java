@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -36,6 +37,7 @@ import android.nfc.tech.NfcB;
 import android.nfc.tech.NfcF;
 import android.nfc.tech.NfcV;
 import android.view.View;
+import android.widget.Button;
 import android.widget.RemoteViews;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -73,6 +75,7 @@ public class ControlActivity extends AppCompatActivity {
     TextView text_user;
     TextView text_cluster;
     TextView text_cluster_current;
+    TextView text_time;
     TextView text_machine;
     TextView text_machine_status;
     public static Map thisUser;
@@ -92,6 +95,7 @@ public class ControlActivity extends AppCompatActivity {
         text_user = (TextView) findViewById(R.id.text_user);
         text_cluster = (TextView) findViewById(R.id.text_cluster);
         text_cluster_current = (TextView) findViewById(R.id.text_cluster_current);
+        text_time = (TextView) findViewById(R.id.text_time);
         text_machine = (TextView) findViewById(R.id.text_machine);
         text_machine_status = (TextView) findViewById(R.id.text_machine_status);
 
@@ -123,15 +127,16 @@ public class ControlActivity extends AppCompatActivity {
             user_listener =  ref.child("Users").child(ref.getAuth().getUid()).addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
+                    if(ref.getAuth() == null) return;
                     Log.i(TAG, "Checking for previous info");
                     thisUser = (Map<String, String>) dataSnapshot.getValue();
                     text_user.setText((String) thisUser.get("UserName"));
                     if (thisUser.containsKey("defaultCluster")) { //if default cluster already exists, set textview
                         Log.i(TAG, "previous cluster exists");
                         defClus = (String) thisUser.get("defaultCluster");
-                        text_cluster.setText("Default Cluster: " + defClus);
+                        text_cluster.setText("Home Cluster: " + defClus);
                     } else { //else textview is blank
-                        text_cluster.setText("Default Cluster: " + "Not set");
+                        text_cluster.setText("Home Cluster: " + "Not set");
                     }
                 }
 
@@ -195,7 +200,7 @@ public class ControlActivity extends AppCompatActivity {
             //Get serial number from NFC tag and convert to String
             serial = ByteArrayToHexString(intent.getByteArrayExtra(NfcAdapter.EXTRA_ID));
             //Display NFC serial number
-            ((TextView)findViewById(R.id.text_nfc_serial)).setText("NFC Tag\n" + serial);
+//            ((TextView)findViewById(R.id.text_nfc_serial)).setText("NFC Tag\n" + serial);
 
             //Access AuthData object created during login
             AuthData authData = ref.getAuth();
@@ -207,50 +212,89 @@ public class ControlActivity extends AppCompatActivity {
             machine_listener = ref.child("Machines").child(serial).addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
+                    if(ref.getAuth() == null) return;
                     thisMachine = (Map<String, String>) dataSnapshot.getValue();
                     if(thisMachine == null) {
                         Log.i(TAG, "Unrecognized NFC tag scanned: " + serial);
                         Toast.makeText(context, "No machine with this serial number found.", Toast.LENGTH_LONG).show();
-                        ((TextView)findViewById(R.id.text_nfc_serial)).setText("NFC Tag\n" + serial + "\n(Not found in database)");
+//                        ((TextView)findViewById(R.id.text_nfc_serial)).setText("NFC Tag\n" + serial + "\n(Not found in database)");
                         return;
                     }
                     is_nfc_detected = true; // update nfc check variable (only for registered machines)
-                    String cluster = (String) thisMachine.get("localCluster");
+                    final String cluster = (String) thisMachine.get("localCluster");
                     Log.i(TAG, "found cluster: " + cluster);
-                    if(thisUser.containsKey("defaultCluster")){//if default cluster already exists
-                        if(cluster != defClus){ //AND cluster triggered by NFC is not same as default, change textview current cluster
-                            text_cluster_current.setText("Current Cluster: " + cluster );
-                            ref.child("Users").child(ref.getAuth().getUid()).child("CurrCluster").setValue(cluster); //current cluster to Firebase
+                    //first handle the anonymous user case
+                    if(ref.getAuth().getProvider().equals("anonymous")) {
+                        thisUser.put("CurrCluster",cluster);
+                        thisUser.put("defaultCluster",cluster);
+                        text_cluster.setText("Cluster: " + cluster);
+                        text_cluster_current.setText("");
+                    }
+                    else if(thisUser.containsKey("defaultCluster")){//if default cluster already exists
+                        if(!cluster.equals(defClus)){ //AND cluster triggered by NFC is not same as default, ask user to change
+                            Log.i(TAG,"cluster = " + cluster + ", def = " + defClus);
+
+
+                            AlertDialog.Builder alertbox = new AlertDialog.Builder(ControlActivity.this);
+                            alertbox.setTitle("New Home?");
+                            alertbox.setMessage("Set " + cluster + " as your home cluster?");
+                            alertbox.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    //set this as default
+                                    ref.child("Users").child(ref.getAuth().getUid()).child("defaultCluster").setValue(cluster); //current cluster to Firebase
+                                    ref.child("Users").child(ref.getAuth().getUid()).child("CurrCluster").setValue(cluster); //current cluster to Firebase
+                                    text_cluster.setText("Home Cluster: " + cluster );
+                                    text_cluster_current.setText("");
+                                }
+                            });
+                            alertbox.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    ref.child("Users").child(ref.getAuth().getUid()).child("CurrCluster").setValue(cluster); //current cluster to Firebase
+                                    text_cluster_current.setText("Current Cluster: " + cluster );
+                                }
+                            });
+                            alertbox.show();
                         }
-                        else {
-                            text_cluster_current.setText("Current Cluster: " + cluster ); //else set current cluster to same as default
-                        }
+                        else text_cluster_current.setText("");
+
                     }
                     else { //NO default cluster set yet, hence add to Firebase and display in Control Activity
-                        if(ref.getAuth().getProvider().equals("anonymous")) {
-                            thisUser.put("CurrCluster",cluster);
-                            thisUser.put("defaultCluster",cluster);
-                            text_cluster.setText("Cluster: " + cluster);
-                        }else {
-                            ref.child("Users").child(ref.getAuth().getUid()).child("defaultCluster").setValue(cluster);
-                            text_cluster.setText("Default Cluster: " + cluster);
-                        }
+                        ref.child("Users").child(ref.getAuth().getUid()).child("defaultCluster").setValue(cluster);
+                        text_cluster.setText("Home Cluster: " + cluster);
+                        text_cluster_current.setText("");
                     }
                     //set the machine name:
-                    text_machine.setText((String)thisMachine.get("name") + ": ");
+                    text_machine.setText((String)thisMachine.get("name") + " ");
                     //update the shit with statuses
-                    //EVENTUALLY ADD PUSH NOTIFICATION STUFF HERE?
                     int status = (int)(long)thisMachine.get("status");
+                    boolean washer = (boolean)thisMachine.get("washer");
+                    Button button = (Button)findViewById(R.id.button_omw);
                     if(status == 0) {
-                        text_machine_status.setText(R.string.text_machine_open);
+                        Log.i(TAG,"machine is open");
+                        text_machine_status.setText(R.string.machine_open_flavortext);
                         text_machine_status.setTextColor(getResources().getColor(R.color.green));
+                        text_time.setText("");
+                        if(button != null) button.setVisibility(View.INVISIBLE);
                     } else if(status == 1) {
-                        text_machine_status.setText(R.string.text_machine_finished);
+                        Log.i(TAG,"machine is finished");
+                        if(washer) text_machine_status.setText(R.string.wash_finished_flavortext);
+                        else text_machine_status.setText(R.string.dry_finished_flavortext);
                         text_machine_status.setTextColor(getResources().getColor(R.color.gold));
-                        createNotification();
+                        text_time.setText(Integer.toString((int)(long)thisMachine.get("time")) + " minutes ago");
+                        //set up button
+                        if(button != null) button.setVisibility(View.VISIBLE);
+                        //only create notification if omw is false. Prevents setting the omw from buzzing the user
+                        if(!(boolean)thisMachine.get("omw")) createNotification();
+
                     } else if(status == 2) {
-                        text_machine_status.setText(R.string.text_machine_running);
+                        Log.i(TAG,"machine is running");
+                        if(washer) text_machine_status.setText(R.string.wash_running_flavortext);
+                        else text_machine_status.setText(R.string.dry_running_flavortext);
                         text_machine_status.setTextColor(getResources().getColor(R.color.red));
+                        text_time.setText("");
+                        if(button != null) button.setVisibility(View.INVISIBLE);
                     }
                     else Log.i(TAG,"Somehow we have a status issue");
                 }
@@ -297,18 +341,9 @@ public class ControlActivity extends AppCompatActivity {
         washiato.preferencesEditor.commit();
         ref.unauth();
         Log.i(TAG,"logging out...");
-        if(getNfcStatus() == true){ //if NFC pairing is active, the event listeners exist => remove them on logout
-            if(user_listener!=null && machine_listener != null){
-                ref.removeEventListener(user_listener);
-                ref.removeEventListener(machine_listener);
-            }
-           else if (user_listener != null) {
-                ref.removeEventListener(user_listener);
-            }
-            else if (machine_listener != null) {
-                ref.removeEventListener(machine_listener);
-            }
-        }
+        if(user_listener != null) ref.removeEventListener(user_listener);
+        if(machine_listener != null) ref.removeEventListener(machine_listener);
+
         //remove listeners in the cluster
         ClusterActivity.endClusterListeners();
         is_nfc_detected = false;
@@ -372,6 +407,9 @@ public class ControlActivity extends AppCompatActivity {
                     noNFC.setNegativeButton("That's fine", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
+                            //show the Turn NFC on button
+                            Button button = (Button)findViewById(R.id.button_nfc);
+                            button.setVisibility(View.VISIBLE);
                         }
                     });
                     noNFC.setPositiveButton("Turn NFC On", new DialogInterface.OnClickListener() {
@@ -392,6 +430,9 @@ public class ControlActivity extends AppCompatActivity {
                             washiato.preferencesEditor = washiato.preferences.edit();
                             washiato.preferencesEditor.putBoolean(getString(R.string.pref_nfc),true);
                             washiato.preferencesEditor.apply();
+                            //show the Turn NFC on button
+                            Button button = (Button)findViewById(R.id.button_nfc);
+                            button.setVisibility(View.VISIBLE);
                         }
                     });
                     noNFC.show();
@@ -447,22 +488,20 @@ public class ControlActivity extends AppCompatActivity {
 
     /* notification area */
     public void createNotification() {
-        long[] pattern = new long[6]; //pattern is fucky
-        pattern[0] = 80;
-        pattern[1] = 200;
-        pattern[2] = 80;
-        pattern[3] = 200;
-        pattern[4] = 2000;
-        pattern[5] = 200;
+        long[] pattern = {0,100,100,100,250,500};
         Vibrator v = (Vibrator) this.context.getSystemService(Context.VIBRATOR_SERVICE);
-//        v.vibrate(pattern,-1);
-        v.vibrate(500);
+        v.vibrate(pattern,-1);
+//        v.vibrate(500);
         Log.i(TAG,"setting up notification");
         Bitmap icon;
-        if((boolean)thisMachine.get("washer")) icon = BitmapFactory.decodeResource(context.getResources(),
-                R.mipmap.wm_finished);
-        else icon = BitmapFactory.decodeResource(context.getResources(),
-                R.mipmap.dry_finished);
+        String title;
+        if((boolean)thisMachine.get("washer")) {
+            icon = BitmapFactory.decodeResource(context.getResources(),R.mipmap.wm_finished);
+            title = "Your Laundry is washed!";
+        }else {
+            icon = BitmapFactory.decodeResource(context.getResources(),R.mipmap.dry_finished);
+            title = "Your Laundry is dry!";
+        }
 
 
         final String time = DateFormat.getTimeInstance().format(new Date()).toString();
@@ -470,21 +509,18 @@ public class ControlActivity extends AppCompatActivity {
                 new NotificationCompat.Builder(this)
                         .setSmallIcon(R.drawable.ic_wm_icon)
                         .setLargeIcon(icon)
-                        .setContentTitle("Your Machine Has Finished!")
+                        .setContentTitle(title)
                         .setContentText("Completed at " + time)
                         .setAutoCancel(true)
-                        .setLights(getResources().getColor(R.color.blue),500,500); //doesn't work
-// Creates an explicit intent for an Activity in your app
+                        .setLights(Color.parseColor("#FFFFFFFF"),1000,1000); //doesn't work
+        // Creates an explicit intent for an Activity in your app
         Intent resultIntent = new Intent(this, ControlActivity.class);
-
-// The stack builder object will contain an artificial back stack for the
-// started Activity.
-// This ensures that navigating backward from the Activity leads out of
-// your application to the Home screen.
+        // The stack builder object will contain an artificial back stack for the started Activity.
+        // This ensures that navigating backward from the Activity leads out of your application to the Home screen.
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
-// Adds the back stack for the Intent (but not the Intent itself)
+        // Adds the back stack for the Intent (but not the Intent itself)
         stackBuilder.addParentStack(ControlActivity.class);
-// Adds the Intent that starts the Activity to the top of the stack
+        // Adds the Intent that starts the Activity to the top of the stack
         stackBuilder.addNextIntent(resultIntent);
         PendingIntent resultPendingIntent =
                 stackBuilder.getPendingIntent(
@@ -494,8 +530,7 @@ public class ControlActivity extends AppCompatActivity {
         mBuilder.setContentIntent(resultPendingIntent);
         NotificationManager mNotificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-// mId allows you to update the notification later on.
-
+        // mId allows you to update the notification later on.
         mNotificationManager.notify(1, mBuilder.build());
     }
 
