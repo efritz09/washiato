@@ -3,19 +3,23 @@ package arya.com.washiato;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Paint;
+import android.graphics.Typeface;
 import android.os.Bundle;
+import android.support.design.widget.TextInputEditText;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.text.method.HideReturnsTransformationMethod;
-import android.text.method.PasswordTransformationMethod;
+import android.support.v7.widget.AppCompatButton;
+import android.text.InputType;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.firebase.client.AuthData;
 import com.firebase.client.Firebase;
@@ -26,19 +30,20 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class LoginActivity extends AppCompatActivity {
-    //Declare module level object variables needed
-    CheckBox checkbox;
-    public static EditText password;
-    public static EditText username;
-    Button register;
-    public Firebase ref;
-    private static final String FIREBASE_URL = "https://washiato.firebaseio.com/";
-    private ProgressDialog mAuthProgressDialog;
-    private Firebase.AuthStateListener mAuthStateListener;
-    final Context context = this; //Set context
 
     private static final String TAG = "LoginActivity";
     private static final boolean RESET_FIREBASE_CLUSTERS = false;
+    private static final String FIREBASE_URL = "https://washiato.firebaseio.com/";
+    public Firebase ref;
+
+    private TextInputEditText _passwordText;
+    private TextInputEditText _emailText;
+    private TextView _signupLink;
+    private TextView _passwordResetLink;
+    //private CheckBox _showPwdCheckBox;
+    private ProgressDialog mAuthProgressDialog;
+    private AppCompatButton _loginButton;
+    
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,19 +56,18 @@ public class LoginActivity extends AppCompatActivity {
             actionBar.hide();
         }
 
-        //Create a reference to firebase database
+        // Create a reference to firebase database
         ref = new Firebase(FIREBASE_URL);
 
-        //
-        washiato.preferences = getPreferences(0); //get private preferences
-        if(washiato.preferences.getBoolean(getString(R.string.pref_logged_in),false)) {
-            if(ref.getAuth() != null) {
-                Log.i(TAG, "Logged in");
-                Intent Successful_login = new Intent(LoginActivity.this, ControlActivity.class);
-                startActivity(Successful_login);
-                finish();
-            }
-        } else Log.i(TAG,"not logged");
+        // Check logged in status in shared preferences
+        washiato.preferences = getPreferences(0);
+        if(washiato.preferences.getBoolean(getString(R.string.pref_logged_in),false)
+                && ref.getAuth() != null) {
+            Log.i(TAG, "Already Logged in");
+            Intent intent = new Intent(LoginActivity.this, ControlActivity.class);
+            startActivity(intent);
+            finish();
+        } else Log.i(TAG,"Not logged in");
 
         if(RESET_FIREBASE_CLUSTERS) {
             createMachines();
@@ -71,57 +75,55 @@ public class LoginActivity extends AppCompatActivity {
 
         //set up the firebase connection progress dialog
         mAuthProgressDialog = new ProgressDialog(this);
-        mAuthProgressDialog.setTitle("Loading");
-        mAuthProgressDialog.setMessage("Authenticating with Firebase...");
+        mAuthProgressDialog.setMessage("Logging in...");
         mAuthProgressDialog.setCancelable(false);
 
-        //set up register listener
-        register = (Button) findViewById(R.id.register);
-        register.setOnClickListener(new View.OnClickListener() {
+        // Set up signup listener
+        _signupLink = (TextView) findViewById(R.id.link_signup);
+        _signupLink.setPaintFlags(_signupLink.getPaintFlags() |   Paint.UNDERLINE_TEXT_FLAG);
+        _signupLink.setOnClickListener(new View.OnClickListener() {
+            @Override
             public void onClick(View v) {
-                Intent intentSignUP = new Intent(getApplicationContext(),SignUpActivity.class);
-                startActivity(intentSignUP); //begin signup activity
+                // Start the Signup activity
+                Intent intent = new Intent(getApplicationContext(), SignUpActivity.class);
+                //startActivityForResult(intent, REQUEST_SIGNUP);
+                startActivity(intent);
             }
         });
 
-        //Create an instance of EditText and link it to password from layout
-        password = (EditText) findViewById(R.id.edit_password);
-        username = (EditText) findViewById(R.id.edit_name);
-        //Create an instance of CheckBox and link it to checkbox from layout
-        checkbox = (CheckBox) findViewById(R.id.ShowPwd);
-
-        //Function implemented when checkbox is clicked
-        checkbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            //@Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (!isChecked) { //If checkbox is not checked
-                    //Hide password
-                    password.setTransformationMethod(PasswordTransformationMethod.getInstance());
-                    checkbox.setText(getString(R.string.show_password)); //Checkbox says "Show Password"
-                } else {
-                    //Else show password
-                    password.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
-                    checkbox.setText(getString(R.string.hide_password));//Checkbox says "Hide Password"
-                }
+        _passwordResetLink = (TextView) findViewById(R.id.forgot_password);
+        _passwordResetLink.setPaintFlags(_signupLink.getPaintFlags() |   Paint.UNDERLINE_TEXT_FLAG);
+        _passwordResetLink.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                resetPassword();
             }
         });
+
+        _loginButton = (AppCompatButton) findViewById(R.id.btn_login);
+        _loginButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                confirmLogin();
+            }
+        });
+
+        _passwordText = (TextInputEditText) findViewById(R.id.input_password);
+        _emailText = (TextInputEditText) findViewById(R.id.input_email);
     }
 
 
-    //Function implemented when Login button is pressed
-    public void confirmLogin(View view) {
+    public void confirmLogin() {
         mAuthProgressDialog.show();
         final Intent intent = new Intent(this, ControlActivity.class);
-
-        //Get strings entered as name and password
-        final String name = username.getText().toString();
-        final String pawd = password.getText().toString();
+        final String name = _emailText.getText().toString();
+        final String pawd = _passwordText.getText().toString();
 
         //Authenticate using Firebase
         ref.authWithPassword(name, pawd, new Firebase.AuthResultHandler() {
             @Override
             public void onAuthenticated(AuthData authData) {
-                mAuthProgressDialog.hide();
+                mAuthProgressDialog.cancel();
                 Map<String, Object> map = new HashMap<String, Object>(); //hashmap of username and password
                 map.put("Password", pawd); //fill map
                 map.put("UserName", name);
@@ -133,13 +135,15 @@ public class LoginActivity extends AppCompatActivity {
                 washiato.preferencesEditor.putString(getString(R.string.pref_user_id), authData.getUid());
                 washiato.preferencesEditor.apply();
 
+
                 startActivity(intent); //start control activity
                 finish();
             }
 
             @Override
             public void onAuthenticationError(FirebaseError firebaseError) {
-                mAuthProgressDialog.hide();
+                mAuthProgressDialog.cancel();
+                //mAuthProgressDialog.hide();
                 Log.e("LaunchActivity", "Error logging in");
                 showErrorDialog(firebaseError.toString());
             }
@@ -149,26 +153,117 @@ public class LoginActivity extends AppCompatActivity {
     public void anonLogin(View view) {
         mAuthProgressDialog.show();
         final Intent intent = new Intent(this, ControlActivity.class);
-
         ref.authAnonymously(new Firebase.AuthResultHandler() {
             @Override
             public void onAuthenticated(AuthData authData) {
-                mAuthProgressDialog.hide();
+                mAuthProgressDialog.cancel();
+                //mAuthProgressDialog.hide();
                 Log.i(TAG, "Anonymous authentication success");
-                String cock = authData.getProvider();
-                Log.i(TAG,cock);
-                startActivity(intent); //start control activity
+                String auth = authData.getProvider();
+                Log.i(TAG,auth);
+                startActivity(intent);
             }
 
             @Override
             public void onAuthenticationError(FirebaseError firebaseError) {
-                mAuthProgressDialog.hide();
+                mAuthProgressDialog.cancel();
+                //mAuthProgressDialog.hide();
                 Log.i(TAG, "Anonymous authentication failure");
                 showErrorDialog(firebaseError.toString());
             }
         });
     }
 
+    private void changeEmail(String oldEmail, String pass, String newEmail) {
+        ref.changeEmail(oldEmail, pass, newEmail, new Firebase.ResultHandler() {
+            @Override
+            public void onSuccess() {
+                Toast.makeText(getApplicationContext(),
+                        "Email successfully changed", Toast.LENGTH_LONG).show();
+            }
+            @Override
+            public void onError(FirebaseError firebaseError) {
+                showErrorDialog(firebaseError.toString());
+            }
+        });
+
+    }
+
+    private void changePassword(String email, String oldPass, String newPass) {
+        ref.changePassword(email, oldPass, newPass, new Firebase.ResultHandler() {
+            @Override
+            public void onSuccess() {
+                Toast.makeText(getApplicationContext(),
+                        "Password successfully changed", Toast.LENGTH_LONG).show();
+            }
+            @Override
+            public void onError(FirebaseError firebaseError) {
+                Log.i(TAG, "Change password failure");
+                showErrorDialog(firebaseError.toString());
+            }
+        });
+    }
+
+    private void resetPassword() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        final EditText email = new EditText(getApplicationContext());
+        email.setTextColor(ContextCompat.getColor(this, R.color.colorAccentDark));
+        email.setHintTextColor(ContextCompat.getColor(this,R.color.colorAccent));
+        email.setHint(getString(R.string.hint_enter_email));
+        email.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+        builder.setView(email);
+        builder.setCancelable(false);
+        builder.setPositiveButton(getString(R.string.accept), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Context cont = getApplicationContext();
+                String address = email.getText().toString();
+                if(address.isEmpty() ||
+                        !android.util.Patterns.EMAIL_ADDRESS.matcher(address).matches()) {
+                    Toast.makeText(cont, getString(R.string.error_email_required), Toast.LENGTH_LONG).show();
+                } else {
+                    ref.resetPassword(address, new Firebase.ResultHandler() {
+                        @Override
+                        public void onSuccess() {
+                            Toast.makeText(getApplicationContext(),
+                                    "Password reset email sent", Toast.LENGTH_LONG).show();
+                        }
+                        @Override
+                        public void onError(FirebaseError firebaseError) {
+                            Log.i(TAG, "Reset password failure");
+                            showErrorDialog(firebaseError.toString());
+                        }
+                    });
+                }
+            }
+        });
+
+        builder.setNegativeButton(getString(R.string.cancel),
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
+    }
+
+    private void removeUser(String email, String password) {
+        ref.removeUser(email, password, new Firebase.ResultHandler() {
+            @Override
+            public void onSuccess() {
+                Toast.makeText(getApplicationContext(),
+                        "User removed", Toast.LENGTH_LONG).show();
+            }
+            @Override
+            public void onError(FirebaseError firebaseError) {
+                showErrorDialog(firebaseError.toString());
+            }
+        });
+    }
 
     private void showErrorDialog(String message) {
         new AlertDialog.Builder(this)

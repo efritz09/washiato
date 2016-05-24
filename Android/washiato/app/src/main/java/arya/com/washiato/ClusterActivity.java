@@ -50,8 +50,8 @@ public class ClusterActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cluster);
-//        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-//        setSupportActionBar(toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
         text_cluster_dryers_available = (TextView) findViewById(R.id.text_cluster_dryers_available);
         text_cluster_washers_available = (TextView) findViewById(R.id.text_cluster_washers_available);

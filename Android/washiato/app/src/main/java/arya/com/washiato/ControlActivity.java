@@ -182,8 +182,10 @@ public class ControlActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         // disabling foreground dispatch:
-        NfcAdapter nfcAdapter = NfcAdapter.getDefaultAdapter(this);
-        nfcAdapter.disableForegroundDispatch(this);
+        if(washiato.preferences.getBoolean(getString(R.string.nfc_supported),false)) {
+            NfcAdapter nfcAdapter = NfcAdapter.getDefaultAdapter(this);
+            nfcAdapter.disableForegroundDispatch(this);
+        }
     }
 
     @Override
@@ -265,6 +267,13 @@ public class ControlActivity extends AppCompatActivity {
     public void launchCluster(View view) {
         Log.i(TAG,"starting cluster activity");
         Intent intent = new Intent(this, ClusterActivity.class);
+        startActivity(intent);
+    }
+
+    //launches Tab activity
+    public void launchTab(View view) {
+        Log.i(TAG,"starting tab activity");
+        Intent intent = new Intent(this, TabActivity.class);
         startActivity(intent);
     }
 
