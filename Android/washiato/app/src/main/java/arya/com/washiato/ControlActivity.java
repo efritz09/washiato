@@ -9,6 +9,9 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Vibrator;
@@ -73,6 +76,7 @@ public class ControlActivity extends AppCompatActivity {
     TextView text_machine;
     TextView text_machine_status;
     public static Map thisUser;
+    public Map thisMachine;
     public static boolean is_nfc_detected = false;
     public static String serial;
     final Context context = this; //Set context
@@ -201,7 +205,7 @@ public class ControlActivity extends AppCompatActivity {
             machine_listener = ref.child("Machines").child(serial).addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
-                    Map thisMachine = (Map<String, String>) dataSnapshot.getValue();
+                    thisMachine = (Map<String, String>) dataSnapshot.getValue();
                     if(thisMachine == null) {
                         Log.i(TAG, "Unrecognized NFC tag scanned: " + serial);
                         Toast.makeText(context, "No machine with this serial number found.", Toast.LENGTH_LONG).show();
@@ -442,14 +446,21 @@ public class ControlActivity extends AppCompatActivity {
         pattern[4] = 2000;
         pattern[5] = 200;
         Vibrator v = (Vibrator) this.context.getSystemService(Context.VIBRATOR_SERVICE);
-        v.vibrate(pattern,-1);
+//        v.vibrate(pattern,-1);
+        v.vibrate(500);
         Log.i(TAG,"setting up notification");
+        Bitmap icon;
+        if((boolean)thisMachine.get("washer")) icon = BitmapFactory.decodeResource(context.getResources(),
+                R.mipmap.wm_finished);
+        else icon = BitmapFactory.decodeResource(context.getResources(),
+                R.mipmap.dry_finished);
 
 
         final String time = DateFormat.getTimeInstance().format(new Date()).toString();
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(this)
-                        .setSmallIcon(R.mipmap.wm_finished)
+                        .setSmallIcon(R.drawable.ic_wm_icon)
+                        .setLargeIcon(icon)
                         .setContentTitle("Your Machine Has Finished!")
                         .setContentText("Completed at " + time)
                         .setAutoCancel(true)
