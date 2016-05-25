@@ -21,6 +21,9 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.daimajia.androidanimations.library.Techniques;
+import com.daimajia.androidanimations.library.YoYo;
+
 import arya.com.washiato.helper.WaveView;
 
 public class SplashActivity extends AppCompatActivity {
@@ -37,6 +40,7 @@ public class SplashActivity extends AppCompatActivity {
 
     private WaveView mWaveView;
     private AnimatorSet mAnimatorSet;
+    private Handler handler;
 
     private int mBorderColor = Color.parseColor("#44FFFFFF");
     private int mBorderWidth = 10;
@@ -82,7 +86,11 @@ public class SplashActivity extends AppCompatActivity {
             logo.startAnimation(fadeOut);
             logo.setVisibility(View.INVISIBLE);
 
-            new Handler().postDelayed(openWorksiteSelectActivity, ANIMATION_FADE_TIME);
+            YoYo.with(Techniques.SlideOutUp)
+                    .duration(3000)
+                    .playOn(findViewById(R.id.washiato_logo));
+
+            handler.postDelayed(openWorksiteSelectActivity, ANIMATION_FADE_TIME);
         }
     };
 
@@ -110,6 +118,7 @@ public class SplashActivity extends AppCompatActivity {
 
         logo = (ImageView) findViewById(R.id.washiato_logo);
 
+
         // Animation wave
         mWaveView = (WaveView) findViewById(R.id.wave_view);
         //mWaveView.setBorder(mBorderWidth, mBorderColor);
@@ -136,11 +145,27 @@ public class SplashActivity extends AppCompatActivity {
         amplitudeAnim.setInterpolator(new LinearInterpolator());
         amplitudeAnim.start();
 
+        YoYo.with(Techniques.SlideInDown)
+                .duration(1500)
+                .playOn(findViewById(R.id.washiato_logo));
+
 
         // Set textview and loading animation to let user know data is loading
 //        status = (TextView) findViewById(R.id.status_message);
 
         // Kick off runnable to move to next activity
-        new Handler().postDelayed(fadeAnimation, ANIMATION_DISPLAY_TIME);
+        handler = new Handler();
+        handler.postDelayed(fadeAnimation, ANIMATION_DISPLAY_TIME);
     }
+
+
+    @Override
+    public void onBackPressed() {
+        Log.i(TAG, "Back pressed!!!!!!");
+        handler.removeCallbacks(fadeAnimation);
+        handler.removeCallbacks(openWorksiteSelectActivity);
+
+        super.onBackPressed();
+    }
+
 }
