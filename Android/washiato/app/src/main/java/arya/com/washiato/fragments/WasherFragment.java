@@ -187,6 +187,9 @@ public class WasherFragment extends Fragment {
         });
         washerAdapter.notifyDataSetChanged();
 
+        return rootView;
+    }
+
     public void updateCluster() {
         Log.i(TAG, "updating all the cluster shit");
         text_cluster_name.setText(clusterName + ", ");
@@ -293,6 +296,5 @@ public class WasherFragment extends Fragment {
                 }
             }
         });
-    }
     }*/
 }
