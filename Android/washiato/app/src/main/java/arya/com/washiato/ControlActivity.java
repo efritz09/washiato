@@ -222,11 +222,11 @@ public class ControlActivity extends AppCompatActivity {
             //Push to Firebase (temporarily)
             ref.child("Users").child(authData.getUid()).child("Washer NFC Serial").setValue(serial);
             setMachineListener();
-
         }
     }
 
     public void setMachineListener() {
+        Log.i(TAG,"setting up machine listener");
         //create a listener for changes in the system
         machine_listener = ref.child("Machines").child(serial).addValueEventListener(new ValueEventListener() {
             @Override
@@ -331,7 +331,9 @@ public class ControlActivity extends AppCompatActivity {
     //launches Cluster activity
     public void launchCluster(View view) {
         Log.i(TAG,"starting cluster activity");
-        Intent intent = new Intent(this, ClusterActivity.class);
+//        Intent intent = new Intent(this, ClusterActivity.class);
+//        startActivity(intent);
+        Intent intent = new Intent(this, TabActivity.class);
         startActivity(intent);
     }
 
@@ -366,7 +368,7 @@ public class ControlActivity extends AppCompatActivity {
         if(machine_listener != null) ref.removeEventListener(machine_listener);
 
         //remove listeners in the cluster
-//        ClusterActivity.endClusterListeners();
+        TabActivity.endClusterListeners();
         is_nfc_detected = false;
         //open the login screen
         Intent intent = new Intent(this, LoginActivity.class);
@@ -626,20 +628,20 @@ public class ControlActivity extends AppCompatActivity {
                         .setAutoCancel(true)
                         .setLights(Color.parseColor("#FFFFFFFF"),1000,1000); //doesn't work
         // Creates an explicit intent for an Activity in your app
-        Intent resultIntent = new Intent(this, ControlActivity.class);
+//        Intent resultIntent = new Intent(this, ControlActivity.class);
         // The stack builder object will contain an artificial back stack for the started Activity.
         // This ensures that navigating backward from the Activity leads out of your application to the Home screen.
-        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+//        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
         // Adds the back stack for the Intent (but not the Intent itself)
-        stackBuilder.addParentStack(ControlActivity.class);
+//        stackBuilder.addParentStack(ControlActivity.class);
         // Adds the Intent that starts the Activity to the top of the stack
-        stackBuilder.addNextIntent(resultIntent);
-        PendingIntent resultPendingIntent =
-                stackBuilder.getPendingIntent(
-                        0,
-                        PendingIntent.FLAG_CANCEL_CURRENT
-                );
-        mBuilder.setContentIntent(resultPendingIntent);
+//        stackBuilder.addNextIntent(resultIntent);
+//        PendingIntent resultPendingIntent =
+//                stackBuilder.getPendingIntent(
+//                        0,
+//                        PendingIntent.FLAG_CANCEL_CURRENT
+//                );
+//        mBuilder.setContentIntent(resultPendingIntent);
         NotificationManager mNotificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         // mId allows you to update the notification later on.

@@ -19,6 +19,7 @@ import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.Query;
 import com.firebase.client.ValueEventListener;
+import com.vstechlab.easyfonts.EasyFonts;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -40,8 +41,8 @@ public class TabActivity extends AppCompatActivity {
     public String currclusterName;
     public static String clusterName;
 
-    public static ArrayList<Machine> dryerList = new ArrayList<>();
-    public static ArrayList<Machine> washerList = new ArrayList<>();
+    public static ArrayList<Machine> dryerList;
+    public static ArrayList<Machine> washerList;
     private TabLayout tabLayout;
     private ViewPager viewPager;
     static ChildEventListener clusterMachineListener;
@@ -62,9 +63,13 @@ public class TabActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tab);
         text_cluster_dryers_available = (TextView) findViewById(R.id.text_cluster_dryers_available);
+        text_cluster_dryers_available.setTypeface(EasyFonts.robotoThin(this));
         text_cluster_washers_available = (TextView) findViewById(R.id.text_cluster_washers_available);
+        text_cluster_washers_available.setTypeface(EasyFonts.robotoThin(this));
         text_cluster_location = (TextView) findViewById(R.id.text_cluster_location);
+        text_cluster_location.setTypeface(EasyFonts.robotoBold(this));
         text_cluster_name = (TextView) findViewById(R.id.text_cluster_name);
+        text_cluster_name.setTypeface(EasyFonts.robotoBold(this));
 
         //Create a reference to firebase database
         ref = new Firebase(FIREBASE_URL);
@@ -72,6 +77,8 @@ public class TabActivity extends AppCompatActivity {
 //        tabLayout.getTabAt(0).setIcon(tabIcons[0]);
 //        tabLayout.getTabAt(1).setIcon(tabIcons[1]);
 
+        dryerList = new ArrayList<>();
+        washerList = new ArrayList<>();
         if(ControlActivity.thisUser.containsKey("defaultCluster") && ControlActivity.getNfcStatus()== false) {
             //cluster exists; pull this data
             clusterName = (String) ControlActivity.thisUser.get("defaultCluster");
@@ -89,19 +96,6 @@ public class TabActivity extends AppCompatActivity {
             setUpMachineListener();
         }
 
-        /*ListView listView = (ListView) findViewById(R.id.listview_cluster);
-        statusAdapter = new ClusterStatusAdapter(this, R.layout.cluster_status, machineList);
-        listView.setAdapter(statusAdapter);
-        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> av, View v, int pos, long id) {
-                Log.i(TAG,"longclicked");
-                return false;
-            }
-        });
-
-
-        statusAdapter.notifyDataSetChanged();*/
         viewPager = (ViewPager) findViewById(R.id.viewpager);
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
         adapter.addFragment(new WasherFragment(), "WASHERS");
@@ -116,6 +110,10 @@ public class TabActivity extends AppCompatActivity {
     creates the cluster listener. Only gathers the machine list and the location
      */
     public void setUpClusterListener(String name) {
+        /*if(clusterStatusListener != null) {
+            Log.i(TAG,"cluster listener exists");
+            return;
+        }*/
         clusterStatusListener = ref.child("Clusters").child(clusterName).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -138,6 +136,10 @@ public class TabActivity extends AppCompatActivity {
      */
     public void setUpMachineListener() {
         //now that the cluster is ready, populate the machines
+/*        if(clusterMachineListener != null) {
+            Log.i(TAG,"machine listener exists");
+            return;
+        }*/
         Query queryRef = ref.child("Machines").orderByChild("localCluster").equalTo(clusterName);
         Log.i(TAG,"setting up machine listener");
         clusterMachineListener = queryRef.addChildEventListener(new ChildEventListener() {
