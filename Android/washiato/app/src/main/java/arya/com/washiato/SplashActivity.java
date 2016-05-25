@@ -145,13 +145,10 @@ public class SplashActivity extends AppCompatActivity {
         amplitudeAnim.setInterpolator(new LinearInterpolator());
         amplitudeAnim.start();
 
+        // Animate the washiato logo
         YoYo.with(Techniques.SlideInDown)
                 .duration(1500)
                 .playOn(findViewById(R.id.washiato_logo));
-
-
-        // Set textview and loading animation to let user know data is loading
-//        status = (TextView) findViewById(R.id.status_message);
 
         // Kick off runnable to move to next activity
         handler = new Handler();

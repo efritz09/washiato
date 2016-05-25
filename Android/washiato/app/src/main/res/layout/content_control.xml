@@ -176,8 +176,5 @@
         android:backgroundTint="@color/white"
         android:textColor="@color/colorAccentDark" />
 
-
-
-
-
+    
 </RelativeLayout>
