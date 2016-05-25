@@ -41,8 +41,8 @@ public class TabActivity extends AppCompatActivity {
     public String currclusterName;
     public static String clusterName;
 
-    public static ArrayList<Machine> dryerList = new ArrayList<>();
-    public static ArrayList<Machine> washerList = new ArrayList<>();
+    public static ArrayList<Machine> dryerList;
+    public static ArrayList<Machine> washerList;
     private TabLayout tabLayout;
     private ViewPager viewPager;
     static ChildEventListener clusterMachineListener;
@@ -77,6 +77,8 @@ public class TabActivity extends AppCompatActivity {
 //        tabLayout.getTabAt(0).setIcon(tabIcons[0]);
 //        tabLayout.getTabAt(1).setIcon(tabIcons[1]);
 
+        dryerList = new ArrayList<>();
+        washerList = new ArrayList<>();
         if(ControlActivity.thisUser.containsKey("defaultCluster") && ControlActivity.getNfcStatus()== false) {
             //cluster exists; pull this data
             clusterName = (String) ControlActivity.thisUser.get("defaultCluster");
@@ -108,6 +110,10 @@ public class TabActivity extends AppCompatActivity {
     creates the cluster listener. Only gathers the machine list and the location
      */
     public void setUpClusterListener(String name) {
+        /*if(clusterStatusListener != null) {
+            Log.i(TAG,"cluster listener exists");
+            return;
+        }*/
         clusterStatusListener = ref.child("Clusters").child(clusterName).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -130,6 +136,10 @@ public class TabActivity extends AppCompatActivity {
      */
     public void setUpMachineListener() {
         //now that the cluster is ready, populate the machines
+/*        if(clusterMachineListener != null) {
+            Log.i(TAG,"machine listener exists");
+            return;
+        }*/
         Query queryRef = ref.child("Machines").orderByChild("localCluster").equalTo(clusterName);
         Log.i(TAG,"setting up machine listener");
         clusterMachineListener = queryRef.addChildEventListener(new ChildEventListener() {
