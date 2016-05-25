@@ -37,6 +37,7 @@
             android:layout_height="wrap_content"
             android:inputType="textEmailAddress"
             android:hint="Email"
+            android:text="admin@admin.com"
             android:singleLine="true"
             android:textColor="@color/colorAccentDark"
             android:theme="@style/MyEditText"/>
@@ -57,6 +58,7 @@
             android:layout_height="wrap_content"
             android:inputType="textPassword"
             android:hint="Password"
+            android:text="password"
             android:singleLine="true"
             android:theme="@style/MyEditText"/>
     </android.support.design.widget.TextInputLayout>

@@ -278,12 +278,12 @@ public class LoginActivity extends AppCompatActivity {
         Log.i(TAG,"create the machines in firebase");
         Machine mach1 = new Machine("Apollo","Olympus",0,true,false,0);
         Machine mach2 = new Machine("Athena","Olympus",2,false, false,0);
-        Machine mach3 = new Machine("Artemis","Olympus",1,true, false,0);
+        Machine mach3 = new Machine("Artemis","Olympus",1,false, false,0);
         Machine mach4 = new Machine("Aphrodite","Olympus",1,true, false,0);
         Machine mach5 = new Machine("Zeus","Olympus",0,false, false,0);
         Machine mach6 = new Machine("Ares","Olympus",1,true, false,5);
         Machine mach7 = new Machine("Dionysus","Olympus",2,false, false,0);
-        Machine mach8 = new Machine("Poseidon","Olympus",1,false, false,10);
+        Machine mach8 = new Machine("Poseidon","Olympus",1,true, false,10);
         Machine mach9 = new Machine("Hera","Olympus",1,false, false,10);
         Machine mach10 = new Machine("Hephaestus","Olympus",2,true, false,0);
         Machine mach11 = new Machine("Hermes","Olympus",2,true, false,0);
