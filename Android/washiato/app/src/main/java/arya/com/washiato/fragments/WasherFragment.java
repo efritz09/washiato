@@ -29,9 +29,58 @@ import arya.com.washiato.ClusterStatusAdapter;
 import arya.com.washiato.ControlActivity;
 import arya.com.washiato.Machine;
 import arya.com.washiato.R;
+import arya.com.washiato.TabActivity;
 
 public class WasherFragment extends Fragment {
+
     private static final String TAG = "SettingsFragment";
+
+    TextView vAlarm;
+    Button bAlarmOn;
+    Button bAlarmOff;
+
+    public static ClusterStatusAdapter washerStatusAdapter;
+
+    public WasherFragment() {
+        // Required empty public constructor
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        View rootView = inflater.inflate(R.layout.fragment_washer, container, false);
+
+        ListView listView = (ListView) rootView.findViewById(R.id.listview_washer_cluster);
+        washerStatusAdapter = new ClusterStatusAdapter(getActivity(), R.layout.cluster_status, TabActivity.washerList);
+        if(washerStatusAdapter == null) Log.i(TAG,"shit be null");
+        else {
+            listView.setAdapter(washerStatusAdapter);
+            listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+                @Override
+                public boolean onItemLongClick(AdapterView<?> av, View v, int pos, long id) {
+                    Log.i(TAG, "longclicked");
+                    return false;
+                }
+            });
+            washerStatusAdapter.notifyDataSetChanged();
+        }
+
+        return rootView;
+    }
+
+    public static void updateWasherList() {
+        washerStatusAdapter.notifyDataSetChanged();
+    }
+
+
+
+    /*private static final String TAG = "SettingsFragment";
     public static Firebase ref;
     private static final String FIREBASE_URL = "https://washiato.firebaseio.com/";
     public ArrayList<Machine> washerList;
@@ -98,18 +147,7 @@ public class WasherFragment extends Fragment {
                 public void onCancelled(FirebaseError firebaseError) {
                 }
             });
-//            ref.child("Machines").addValueEventListener(new ValueEventListener() {
-//                @Override
-//                public void onDataChange(DataSnapshot dataSnapshot) {
-//                    Log.i(TAG, "updating machines");
-//                    //update the machines in the listview
-//                    updateMachines();
-//                }
-//
-//                @Override
-//                public void onCancelled(FirebaseError firebaseError) {
-//                }
-//            });
+
         } else if (ControlActivity.thisUser.containsKey("defaultCluster") && ControlActivity.getNfcStatus() == true) {
             //cluster is different from default cluster
             currclusterName = (String) ControlActivity.thisUser.get("CurrCluster");
@@ -157,18 +195,7 @@ public class WasherFragment extends Fragment {
         text_cluster_washers_available.setText(Integer.toString(cluster.getNumWash()) + " washers available");
 
         //this is here to prevent the machine from updating before the cluster in the event of a cluster change
-//        ref.child("Machines").addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//                Log.i(TAG, "updating machines");
-//                //update the machines in the listview
-//                updateMachines();
-//            }
 //
-//            @Override
-//            public void onCancelled(FirebaseError firebaseError) {
-//            }
-//        });
         //now that the cluster is ready, populate the machines
         Query queryRef = ref.child("Machines").orderByChild("localCluster").equalTo(clusterName);
         clusterMachineListener = queryRef.addChildEventListener(new ChildEventListener() {
@@ -254,20 +281,6 @@ public class WasherFragment extends Fragment {
         if (clusterStatusListener != null) ref.removeEventListener(clusterStatusListener);
     }
 
-//        bAlarmOn.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                updateUIAlarmStatus(true);
-//            }
-//        });
-//
-//        bAlarmOff.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                updateUIAlarmStatus(false);
-//            }
-//        });
-//        return rootView;
 
     public void updateUIAlarmStatus(final boolean alarmStatus) {
         getActivity().runOnUiThread(new Runnable() {
@@ -281,5 +294,5 @@ public class WasherFragment extends Fragment {
             }
         });
     }
-    }
+    }*/
 }

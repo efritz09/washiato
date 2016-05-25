@@ -366,7 +366,7 @@ public class ControlActivity extends AppCompatActivity {
         if(machine_listener != null) ref.removeEventListener(machine_listener);
 
         //remove listeners in the cluster
-        ClusterActivity.endClusterListeners();
+//        ClusterActivity.endClusterListeners();
         is_nfc_detected = false;
         //open the login screen
         Intent intent = new Intent(this, LoginActivity.class);
