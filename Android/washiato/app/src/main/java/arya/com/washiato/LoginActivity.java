@@ -328,8 +328,8 @@ public class LoginActivity extends AppCompatActivity {
         mach_array2.add("04CF3652783F80");
         mach_array2.add("04F2C58A6F4080");
 
-        Cluster clus1 = new Cluster("Rains 218", 1, 1, mach_array);
-        Cluster clus2 = new Cluster("Rains 217", 1, 0, mach_array2);
+        Cluster clus1 = new Cluster("Rains 218", mach_array);
+        Cluster clus2 = new Cluster("Rains 217", mach_array2);
 
         ref.child("Clusters").child("Olympus").setValue(clus1);
         ref.child("Clusters").child("Valhalla").setValue(clus2);

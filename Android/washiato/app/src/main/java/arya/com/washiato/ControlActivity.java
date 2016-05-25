@@ -35,6 +35,7 @@ import android.nfc.tech.NfcB;
 import android.nfc.tech.NfcF;
 import android.nfc.tech.NfcV;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RemoteViews;
@@ -487,6 +488,8 @@ public class ControlActivity extends AppCompatActivity {
     }
 
     public void ConnectMachine(View view) {
+        InputMethodManager inputManager = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),InputMethodManager.HIDE_NOT_ALWAYS);
         //find the name of the machine and connect to it
         final String machineName = editText_machine_name.getText().toString();
         Log.i(TAG,"Finding " + machineName);
@@ -536,6 +539,7 @@ public class ControlActivity extends AppCompatActivity {
         }
 
     }
+
     private void setNFCvisuals(boolean on) {
         if(on) {
             button_nfcOn.setVisibility(View.GONE);
@@ -633,7 +637,7 @@ public class ControlActivity extends AppCompatActivity {
         PendingIntent resultPendingIntent =
                 stackBuilder.getPendingIntent(
                         0,
-                        PendingIntent.FLAG_UPDATE_CURRENT
+                        PendingIntent.FLAG_CANCEL_CURRENT
                 );
         mBuilder.setContentIntent(resultPendingIntent);
         NotificationManager mNotificationManager =
