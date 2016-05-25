@@ -40,6 +40,7 @@ public class ClusterStatusAdapter extends ArrayAdapter {
             LayoutInflater inflater = ((Activity)context).getLayoutInflater();
             row = inflater.inflate(layoutResourceId,parent,false);
             holder = new ViewHolder();
+            holder.name = (TextView) row.findViewById(R.id.text_machine_name);
             holder.icon = (ImageView) row.findViewById(R.id.icon_cluster_status);
             holder.status = (TextView) row.findViewById(R.id.text_cluster_status);
             holder.time = (TextView) row.findViewById(R.id.text_cluster_time_since_finished);
@@ -48,36 +49,37 @@ public class ClusterStatusAdapter extends ArrayAdapter {
             holder = (ViewHolder)row.getTag();
         }
         Machine thisMachine = data.get(position);
+        holder.name.setText(thisMachine.getName());
         switch (thisMachine.getStatus()) {
             case 0:
                 holder.status.setText(R.string.text_machine_open);
 //                holder.status.setText(ContextCompat.getColor(context, R.color.green));
                 holder.time.setText("");
                 //check to see if it's a washer or dryer, set icon accordingly
-                if (thisMachine.getWasher())
-                    Picasso.with(context).load(R.mipmap.wm_open).into(holder.icon);
-                else Picasso.with(context).load(R.mipmap.dry_open).into(holder.icon);
+                if (thisMachine.getWasher()) Picasso.with(context).load(R.drawable.ic_wm_open).into(holder.icon);
+                else Picasso.with(context).load(R.drawable.ic_dry_open).into(holder.icon);
                 break;
             case 1:
                 holder.status.setText(R.string.text_machine_finished);
 //                holder.status.setText(ContextCompat.getColor(context, R.color.gold));
                 holder.time.setText(Integer.toString(thisMachine.getTime()) + " minutes ago");
-                if (thisMachine.getWasher()) Picasso.with(context).load(R.mipmap.wm_finished).into(holder.icon);
-                else Picasso.with(context).load(R.mipmap.dry_finished).into(holder.icon);
+                if (thisMachine.getWasher()) Picasso.with(context).load(R.drawable.ic_wm_finished).into(holder.icon);
+                else Picasso.with(context).load(R.drawable.ic_dry_finished).into(holder.icon);
                 //maybe display time here?
                 break;
             case 2:
                 holder.status.setText(R.string.text_machine_running);
 //                holder.status.setText(ContextCompat.getColor(context, R.color.red));
                 holder.time.setText("");
-                if (thisMachine.getWasher()) Picasso.with(context).load(R.mipmap.wm_running).into(holder.icon);
-                else Picasso.with(context).load(R.mipmap.dry_running).into(holder.icon);
+                if (thisMachine.getWasher()) Picasso.with(context).load(R.drawable.ic_wm_running).into(holder.icon);
+                else Picasso.with(context).load(R.drawable.ic_dry_running).into(holder.icon);
                 break;
         }
         return row;
     }
 
     static class ViewHolder {
+        TextView name;
         TextView status;
         TextView time;
         ImageView icon;

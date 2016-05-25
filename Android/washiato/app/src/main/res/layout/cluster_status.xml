@@ -5,14 +5,27 @@
 
     <ImageView
         android:id="@+id/icon_cluster_status"
+        android:layout_width="52dp"
+        android:layout_height="52dp"
+        android:layout_marginStart="20dp"
+        android:src="@drawable/ic_dry_finished"/>
+
+    <TextView
+        android:id="@+id/text_machine_name"
+        android:text="Name"
+        android:layout_toRightOf="@id/icon_cluster_status"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@mipmap/wm_running"/>
+        android:textSize="25dp"/>
 
     <TextView
         android:id="@+id/text_cluster_status"
         android:text="running"
-        android:layout_toRightOf="@id/icon_cluster_status"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="20dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         />
@@ -20,8 +33,9 @@
     <TextView
         android:id="@+id/text_cluster_time_since_finished"
         android:text="time"
-        android:layout_below="@id/text_cluster_status"
-        android:layout_toRightOf="@id/icon_cluster_status"
+        android:layout_alignBottom="@id/icon_cluster_status"
+        android:layout_marginBottom="10dp"
+        android:layout_alignEnd="@id/text_cluster_status"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         />

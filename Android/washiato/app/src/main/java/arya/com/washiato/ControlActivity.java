@@ -227,6 +227,7 @@ public class ControlActivity extends AppCompatActivity {
     }
 
     public void setMachineListener() {
+        Log.i(TAG,"setting up machine listener");
         //create a listener for changes in the system
         machine_listener = ref.child("Machines").child(serial).addValueEventListener(new ValueEventListener() {
             @Override
@@ -331,7 +332,9 @@ public class ControlActivity extends AppCompatActivity {
     //launches Cluster activity
     public void launchCluster(View view) {
         Log.i(TAG,"starting cluster activity");
-        Intent intent = new Intent(this, ClusterActivity.class);
+//        Intent intent = new Intent(this, ClusterActivity.class);
+//        startActivity(intent);
+        Intent intent = new Intent(this, TabActivity.class);
         startActivity(intent);
     }
 
@@ -366,7 +369,7 @@ public class ControlActivity extends AppCompatActivity {
         if(machine_listener != null) ref.removeEventListener(machine_listener);
 
         //remove listeners in the cluster
-//        ClusterActivity.endClusterListeners();
+        TabActivity.endClusterListeners();
         is_nfc_detected = false;
         //open the login screen
         Intent intent = new Intent(this, LoginActivity.class);
