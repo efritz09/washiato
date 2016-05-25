@@ -108,7 +108,7 @@ public class ControlActivity extends AppCompatActivity {
         text_machine = (TextView) findViewById(R.id.text_machine);
         text_machine.setTypeface(EasyFonts.robotoBold(this));
         text_machine_status = (TextView) findViewById(R.id.text_machine_status);
-        text_machine_status.setTypeface(EasyFonts.robotoBlack(this));
+        text_machine_status.setTypeface(EasyFonts.robotoThin(this));
 
         button_nfcOn = (Button)findViewById(R.id.button_nfc);
         editText_machine_name = (EditText)findViewById(R.id.edit_machine_id);

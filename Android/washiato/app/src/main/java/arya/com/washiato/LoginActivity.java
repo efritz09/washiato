@@ -32,7 +32,7 @@ import java.util.Map;
 public class LoginActivity extends AppCompatActivity {
 
     private static final String TAG = "LoginActivity";
-    private static final boolean RESET_FIREBASE_CLUSTERS = true;
+    private static final boolean RESET_FIREBASE_CLUSTERS = false;
     private static final String FIREBASE_URL = "https://washiato.firebaseio.com/";
     public Firebase ref;
 
@@ -297,10 +297,10 @@ public class LoginActivity extends AppCompatActivity {
         ref.child("Machines").child("044D5B8A6F4080").setValue(mach2);
         ref.child("Machines").child("005").setValue(mach3);
         ref.child("Machines").child("006").setValue(mach4);
-        ref.child("Machines").child("666xx666").setValue(mach5);
+        ref.child("Machines").child("043F5C8A6F4081").setValue(mach5);
         ref.child("Machines").child("666666").setValue(mach6);
         ref.child("Machines").child("004").setValue(mach7);
-        ref.child("Machines").child("6666").setValue(mach8);
+        ref.child("Machines").child("04282352783F81").setValue(mach8);
         ref.child("Machines").child("001").setValue(mach9);
         ref.child("Machines").child("002").setValue(mach10);
         ref.child("Machines").child("003").setValue(mach11);
@@ -310,9 +310,9 @@ public class LoginActivity extends AppCompatActivity {
         ref.child("Machines").child("04F2C58A6F4080").setValue(mach15);
 
         ArrayList<String> mach_array = new ArrayList<String>();
-        mach_array.add("6666");
+        mach_array.add("04282352783F81");
         mach_array.add("666666");
-        mach_array.add("666xx666");
+        mach_array.add("043F5C8A6F4081");
         mach_array.add("044D5B8A6F4080");
         mach_array.add("04457C8A6F4080");
         mach_array.add("001");
