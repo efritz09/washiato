@@ -18,7 +18,8 @@ tools:context=".TabActivity">
             android:layout_marginLeft="20dp"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorAccentDark" />
 
         <TextView
             android:id="@+id/text_cluster_location"
@@ -28,7 +29,8 @@ tools:context=".TabActivity">
             android:layout_height="wrap_content"
             android:layout_alignTop="@+id/text_cluster_name"
             android:layout_marginEnd="20dp"
-            android:layout_alignParentRight="true" />
+            android:layout_alignParentRight="true"
+            android:textColor="@color/colorAccentDark" />
 
         <TextView
             android:id="@+id/text_cluster_washers_available"
@@ -37,7 +39,8 @@ tools:context=".TabActivity">
             android:layout_centerHorizontal="true"
             android:layout_below="@id/text_cluster_location"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorAccentDark" />
 
         <TextView
             android:id="@+id/text_cluster_dryers_available"
@@ -46,7 +49,8 @@ tools:context=".TabActivity">
             android:layout_centerHorizontal="true"
             android:layout_below="@id/text_cluster_washers_available"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorAccentDark" />
 
         <View
             android:layout_width="match_parent"

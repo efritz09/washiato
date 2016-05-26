@@ -18,6 +18,7 @@
         android:layout_marginTop="10dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textColor="@color/colorAccentDark"
         android:textSize="25dp"/>
 
     <TextView
@@ -28,6 +29,7 @@
         android:layout_marginEnd="20dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textColor="@color/colorAccentDark"
         />
 
     <TextView
@@ -38,6 +40,7 @@
         android:layout_alignEnd="@id/text_cluster_status"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textColor="@color/colorAccentDark"
         />
 
 <!--    <ImageView
