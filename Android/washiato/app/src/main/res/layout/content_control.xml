@@ -62,15 +62,20 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:visibility="gone"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:text=""
             android:id="@+id/text_machine_status"
             android:layout_below="@+id/text_machine"
             android:layout_centerHorizontal="true"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginTop="10dp"
             android:gravity="center_horizontal"/>
 
 
         <TextView
+            android:visibility="gone"
             android:id="@+id/text_time"
             android:layout_centerHorizontal="true"
             android:text=""
@@ -78,6 +83,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
+            android:layout_marginTop="10dp"
             android:gravity="center_horizontal"
             />
 
@@ -88,7 +94,7 @@
         android:id="@+id/button_cluster"
         android:text="View Cluster Status"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="60dp"
         android:onClick="launchCluster"
         android:backgroundTint="@color/white"
         android:textColor="@color/colorAccentDark"
@@ -97,7 +103,7 @@
         android:layout_marginStart="50dp"
         android:layout_marginEnd="50dp"
         android:textSize="20sp"
-        android:layout_centerHorizontal="true"/>
+        android:layout_centerHorizontal="true" />
 
     <!--<TextView-->
         <!--android:id="@+id/text_machine"-->

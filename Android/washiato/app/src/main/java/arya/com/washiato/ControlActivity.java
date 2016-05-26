@@ -11,6 +11,10 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.ShapeDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Vibrator;
@@ -95,6 +99,13 @@ public class ControlActivity extends AppCompatActivity {
     private TextView text_enable_NFC;
 
     private static RelativeLayout info;
+    private static GradientDrawable infoBackground;
+    private static int colorAccentDark;
+    private static int green;
+    private static int gold;
+    private static int red;
+    private static int width = 15;
+
 
     public static Map thisUser;
     static public Map thisMachine;
@@ -189,8 +200,16 @@ public class ControlActivity extends AppCompatActivity {
             });
         }
 
+        // Stupid hack to set colors in static function
+        colorAccentDark = getResources().getColor(R.color.colorAccentDark);
+        green = getResources().getColor(R.color.green);
+        red = getResources().getColor(R.color.red);
+        gold = getResources().getColor(R.color.gold);
+
         // Long listener to unpair from a washiato
         info = (RelativeLayout) findViewById(R.id.info);
+        infoBackground = (GradientDrawable) info.getBackground();
+        infoBackground.setStroke(width, colorAccentDark);
         info.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
@@ -198,7 +217,6 @@ public class ControlActivity extends AppCompatActivity {
                     String currentMachine = (String)thisMachine.get("name");
                     AlertDialog.Builder alertbox = new AlertDialog.Builder(ControlActivity.this);
                     alertbox.setTitle("Unpair from: " + currentMachine + "?");
-//                    alertbox.setMessage("Unpair from: " + currentMachine + "?");
                     alertbox.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
@@ -212,6 +230,9 @@ public class ControlActivity extends AppCompatActivity {
                             connected = false;
                             thisMachine = null;
                             //update the settext
+                            infoBackground.setStroke(width, colorAccentDark);
+                            text_machine_status.setVisibility(View.GONE);
+                            text_time.setVisibility(View.GONE);
                             text_machine.setText("Hold phone next to a washiato to connect!");
                             text_machine.setTextColor(getResources().getColor(R.color.colorAccent));
                             text_machine_status.setText("");
@@ -371,18 +392,23 @@ public class ControlActivity extends AppCompatActivity {
                 boolean washer = (boolean)thisMachine.get("washer");
                 if(status == 0) {
                     Log.i(TAG,"machine is open");
+                    infoBackground.setStroke(width, green);
+                    text_machine_status.setVisibility(View.VISIBLE);
                     text_machine_status.setText(R.string.machine_open_flavortext);
-                    text_machine_status.setTextColor(cont.getResources().getColor(R.color.green));
-                    text_machine.setTextColor(cont.getResources().getColor(R.color.green));
+                    //text_machine_status.setTextColor(cont.getResources().getColor(R.color.green));
+                    //text_machine.setTextColor(cont.getResources().getColor(R.color.green));
                     text_time.setText("");
                     omw = false;
                     //if(button_omw != null) button_omw.setVisibility(View.INVISIBLE);
                 } else if(status == 1) {
                     Log.i(TAG,"machine is finished");
+                    text_machine_status.setVisibility(View.VISIBLE);
+                    text_time.setVisibility(View.VISIBLE);
                     if(washer) text_machine_status.setText(R.string.wash_finished_flavortext);
                     else text_machine_status.setText(R.string.dry_finished_flavortext);
-                    text_machine_status.setTextColor(cont.getResources().getColor(R.color.gold));
-                    text_machine.setTextColor(cont.getResources().getColor(R.color.gold));
+                    infoBackground.setStroke(width, gold);
+                    //text_machine_status.setTextColor(cont.getResources().getColor(R.color.gold));
+                    //text_machine.setTextColor(cont.getResources().getColor(R.color.gold));
                     text_time.setText(Integer.toString((int)(long)thisMachine.get("time")) + " minutes ago");
                     //set up button
                     omw = true;
@@ -392,10 +418,12 @@ public class ControlActivity extends AppCompatActivity {
 
                 } else if(status == 2) {
                     Log.i(TAG,"machine is running");
+                    text_machine_status.setVisibility(View.VISIBLE);
                     if(washer) text_machine_status.setText(R.string.wash_running_flavortext);
                     else text_machine_status.setText(R.string.dry_running_flavortext);
-                    text_machine_status.setTextColor(cont.getResources().getColor(R.color.red));
-                    text_machine.setTextColor(cont.getResources().getColor(R.color.red));
+                    infoBackground.setStroke(width, red);
+                    //text_machine_status.setTextColor(cont.getResources().getColor(R.color.red));
+                    //text_machine.setTextColor(cont.getResources().getColor(R.color.red));
                     text_time.setText("");
                     omw = false;
                     //if(button_omw != null) button_omw.setVisibility(View.INVISIBLE);

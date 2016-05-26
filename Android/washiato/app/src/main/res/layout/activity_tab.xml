@@ -4,7 +4,7 @@ xmlns:app="http://schemas.android.com/apk/res-auto"
 xmlns:tools="http://schemas.android.com/tools"
 android:layout_width="match_parent"
 android:layout_height="match_parent"
-    android:background="@color/colorPrimary"
+    android:background="@color/white"
 tools:context=".TabActivity">
 
     <RelativeLayout
@@ -14,7 +14,7 @@ tools:context=".TabActivity">
         <TextView
             android:id="@+id/text_cluster_name"
             android:text=""
-            android:layout_marginTop="60dp"
+            android:layout_marginTop="70dp"
             android:layout_marginLeft="20dp"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:layout_width="wrap_content"
@@ -38,6 +38,7 @@ tools:context=".TabActivity">
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:layout_centerHorizontal="true"
             android:layout_below="@id/text_cluster_location"
+            android:layout_marginTop="10dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/colorAccentDark" />
@@ -50,15 +51,16 @@ tools:context=".TabActivity">
             android:layout_below="@id/text_cluster_washers_available"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
             android:textColor="@color/colorAccentDark" />
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_centerVertical="true"
-            android:layout_below="@id/text_cluster_dryers_available"
-            android:layout_marginTop="5dp"
-            android:background="@color/colorAccentDark" />
+        <!--<View-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="1dp"-->
+            <!--android:layout_centerVertical="true"-->
+            <!--android:layout_below="@id/text_cluster_dryers_available"-->
+            <!--android:layout_marginTop="5dp"-->
+            <!--android:background="@color/colorAccentDark" />-->
 
         <!--<Button
             android:id="@+id/button_tab_logout"
@@ -109,7 +111,7 @@ tools:context=".TabActivity">
         android:id="@+id/viewpager"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="110dp"
+        android:layout_marginTop="140dp"
         android:layout_marginBottom="50dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"  />
 
