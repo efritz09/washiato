@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
+import com.vstechlab.easyfonts.EasyFonts;
 
 import java.util.ArrayList;
 
@@ -52,7 +53,9 @@ public class ClusterStatusAdapter extends ArrayAdapter {
         holder.name.setText(thisMachine.getName());
         switch (thisMachine.getStatus()) {
             case 0:
+                holder.name.setTypeface(EasyFonts.robotoBold(context));
                 holder.status.setText(R.string.text_machine_open);
+                holder.status.setTypeface(EasyFonts.robotoBold(context));
 //                holder.status.setText(ContextCompat.getColor(context, R.color.green));
                 holder.time.setText("");
                 //check to see if it's a washer or dryer, set icon accordingly
@@ -60,15 +63,20 @@ public class ClusterStatusAdapter extends ArrayAdapter {
                 else Picasso.with(context).load(R.drawable.ic_dry_open).into(holder.icon);
                 break;
             case 1:
+                holder.name.setTypeface(EasyFonts.robotoMedium(context));
                 holder.status.setText(R.string.text_machine_finished);
+                holder.status.setTypeface(EasyFonts.robotoMedium(context));
 //                holder.status.setText(ContextCompat.getColor(context, R.color.gold));
                 holder.time.setText(Integer.toString(thisMachine.getTime()) + " minutes ago");
+                holder.time.setTypeface(EasyFonts.robotoMedium(context));
                 if (thisMachine.getWasher()) Picasso.with(context).load(R.drawable.ic_wm_finished).into(holder.icon);
                 else Picasso.with(context).load(R.drawable.ic_dry_finished).into(holder.icon);
                 //maybe display time here?
                 break;
             case 2:
+                holder.name.setTypeface(EasyFonts.robotoRegular(context));
                 holder.status.setText(R.string.text_machine_running);
+                holder.status.setTypeface(EasyFonts.robotoRegular(context));
 //                holder.status.setText(ContextCompat.getColor(context, R.color.red));
                 holder.time.setText("");
                 if (thisMachine.getWasher()) Picasso.with(context).load(R.drawable.ic_wm_running).into(holder.icon);

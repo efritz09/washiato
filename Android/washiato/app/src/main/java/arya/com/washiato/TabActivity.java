@@ -63,9 +63,9 @@ public class TabActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tab);
         text_cluster_dryers_available = (TextView) findViewById(R.id.text_cluster_dryers_available);
-        text_cluster_dryers_available.setTypeface(EasyFonts.robotoThin(this));
+        text_cluster_dryers_available.setTypeface(EasyFonts.robotoRegular(this));
         text_cluster_washers_available = (TextView) findViewById(R.id.text_cluster_washers_available);
-        text_cluster_washers_available.setTypeface(EasyFonts.robotoThin(this));
+        text_cluster_washers_available.setTypeface(EasyFonts.robotoRegular(this));
         text_cluster_location = (TextView) findViewById(R.id.text_cluster_location);
         text_cluster_location.setTypeface(EasyFonts.robotoBold(this));
         text_cluster_name = (TextView) findViewById(R.id.text_cluster_name);
@@ -263,7 +263,7 @@ public class TabActivity extends AppCompatActivity {
         Log.i(TAG, "updating all the cluster shit");
         if(text_cluster_name == null)Log.i(TAG,"nulllllll");
         if(text_cluster_location == null)Log.i(TAG,"nulllllll");
-        text_cluster_name.setText(clusterName + ", ");
+        text_cluster_name.setText(clusterName);
         text_cluster_location.setText(cluster.getLocation());
         updateOpenMachines(true);
         updateOpenMachines(false);
@@ -288,22 +288,24 @@ public class TabActivity extends AppCompatActivity {
                 finished++;
             }
         }
-        String plural1 = "s";
-        String plural2 = "s";
+//        String plural1 = "s";
+//        String plural2 = "s";
         if(wash) {
 //            Log.i(TAG,"num wash = " + open + "; fin wash = "+ finished);
             cluster.setNumWash(open);
             cluster.setFinWash(finished);
-            if(open == 1) plural1 = "";
-            if(finished == 1) plural2 = "";
-            text_cluster_washers_available.setText(open+" washer"+plural1+" open, "+finished+" washer"+plural2+" finished");
+//            if(open == 1) plural1 = "";
+//            if(finished == 1) plural2 = "";
+            text_cluster_washers_available.setText("Washers: "+open+" open, "+finished+" finished");
+//            text_cluster_washers_available.setText(open+" washer"+plural1+" open, "+finished+" washer"+plural2+" finished");
         }else {
 //            Log.i(TAG,"num dry = " + open + "; fin dry = "+ finished);
             cluster.setNumDry(open);
             cluster.setFinDry(finished);
-            if(open == 1) plural1 = "";
-            if(finished == 1) plural2 = "";
-            text_cluster_dryers_available.setText(open+" dryer"+plural1+" open, "+finished+" dryer"+plural2+" finished");
+//            if(open == 1) plural1 = "";
+//            if(finished == 1) plural2 = "";
+            text_cluster_dryers_available.setText("Dryers: "+open+" open, "+finished+" finished");
+//            text_cluster_dryers_available.setText(open+" dryer"+plural1+" open, "+finished+" dryer"+plural2+" finished");
         }
     }
     /*
