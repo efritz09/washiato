@@ -73,6 +73,7 @@ public class ControlActivity extends AppCompatActivity {
     private static final String FIREBASE_URL = "https://washiato.firebaseio.com/";
     private final int MY_PERMISSIONS_REQUEST_LOCATION = 0;
     private static final String TAG = "ControlActivity";
+
     static String defClus;
     static TextView text_user;
     static TextView text_cluster;
@@ -80,10 +81,13 @@ public class ControlActivity extends AppCompatActivity {
     static TextView text_time;
     static TextView text_machine;
     static TextView text_machine_status;
+    //Button button_nfcOn;
+    //EditText editText_machine_name;
+    //Button button_machine_select;
     static Button button_omw;
-    Button button_nfcOn;
-    EditText editText_machine_name;
-    Button button_machine_select;
+    private TextView text_logout_link;
+    private TextView text_enable_NFC;
+
     public static Map thisUser;
     static public Map thisMachine;
     public static boolean is_nfc_detected = false;
@@ -112,9 +116,14 @@ public class ControlActivity extends AppCompatActivity {
         text_machine_status.setTypeface(EasyFonts.robotoThin(this));
 
         button_omw = (Button)findViewById(R.id.button_omw);
-        button_nfcOn = (Button)findViewById(R.id.button_nfc);
-        editText_machine_name = (EditText)findViewById(R.id.edit_machine_id);
-        button_machine_select = (Button)findViewById(R.id.button_select_machine);
+
+        text_enable_NFC = (TextView) findViewById(R.id.enable_nfc);
+        text_enable_NFC.setTypeface(EasyFonts.robotoBold(this));
+        text_logout_link = (TextView) findViewById(R.id.log_out);
+        text_logout_link.setTypeface(EasyFonts.robotoBold(this));
+        //button_nfcOn = (Button)findViewById(R.id.button_nfc);
+        //editText_machine_name = (EditText)findViewById(R.id.edit_machine_id);
+        //button_machine_select = (Button)findViewById(R.id.button_select_machine);
 
         //Create a reference to firebase database
         ref = new Firebase(FIREBASE_URL);
@@ -529,14 +538,69 @@ public class ControlActivity extends AppCompatActivity {
 
     }
 
+//    public void ConnectMachine(View view) {
+//        InputMethodManager inputManager = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+//        inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),InputMethodManager.HIDE_NOT_ALWAYS);
+//        //find the name of the machine and connect to it
+//        final String machineName = editText_machine_name.getText().toString();
+//        Log.i(TAG,"Finding " + machineName);
+//
+//        ref.child("Machines").addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                Map<String,Object> map = (HashMap<String, Object>) dataSnapshot.getValue();
+//                //loop through all machines to find the one we want
+//                for (Map.Entry<String, Object> entry : map.entrySet()) {
+////                    System.out.println((String)entry.getKey() + "/" + (String)entry.getValue());
+//                    if(map.containsKey(entry.getKey())) {
+//                        Map<String,Object> machine = (HashMap<String, Object>)map.get(entry.getKey());
+//                        if(((String)machine.get("name")).equalsIgnoreCase(machineName)) {
+//                            Log.i(TAG,"WE FOUND IT!");
+////                            defClus = (String)machine.get("localCluster");
+//                            serial = entry.getKey();
+//                            setMachineListener();
+//                            return;
+//                        }
+//                    }
+//                }
+//                Log.i(TAG,"couldn't find it...");
+//                Toast.makeText(context, "No machine with this name was found.", Toast.LENGTH_LONG).show();
+//
+//            }
+//
+//            @Override
+//            public void onCancelled(FirebaseError firebaseError) {
+//
+//            }
+//        });
+//
+//        if(defClus != null) {//grab the cluster data and search for the machine name
+//            ref.child("Clusters").child(defClus).addListenerForSingleValueEvent(new ValueEventListener() {
+//                @Override
+//                public void onDataChange(DataSnapshot dataSnapshot) {
+//
+//                }
+//
+//                @Override
+//                public void onCancelled(FirebaseError firebaseError) {
+//
+//                }
+//            });
+//
+//        }
+//
+//    }
+
     private void setNFCvisuals(boolean on) {
         if(on) {
-            button_nfcOn.setVisibility(View.GONE);
+            text_enable_NFC.setVisibility(View.GONE);
+            //button_nfcOn.setVisibility(View.GONE);
 //            editText_machine_name.setVisibility(View.GONE);
 //            editText_machine_name.setHint("");
 //            button_machine_select.setVisibility(View.GONE);
         }else {
-            button_nfcOn.setVisibility(View.VISIBLE);
+            text_enable_NFC.setVisibility(View.VISIBLE);
+            //button_nfcOn.setVisibility(View.VISIBLE);
 //            editText_machine_name.setVisibility(View.VISIBLE);
 //            editText_machine_name.setHint("Enter Machine Name");
 //            button_machine_select.setVisibility(View.VISIBLE);

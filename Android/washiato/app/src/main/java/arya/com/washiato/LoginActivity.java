@@ -24,6 +24,7 @@ import android.widget.Toast;
 import com.firebase.client.AuthData;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
+import com.vstechlab.easyfonts.EasyFonts;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -80,7 +81,8 @@ public class LoginActivity extends AppCompatActivity {
 
         // Set up signup listener
         _signupLink = (TextView) findViewById(R.id.link_signup);
-        _signupLink.setPaintFlags(_signupLink.getPaintFlags() |   Paint.UNDERLINE_TEXT_FLAG);
+        _signupLink.setTypeface(EasyFonts.robotoBold(this));
+        //_signupLink.setPaintFlags(_signupLink.getPaintFlags() |   Paint.UNDERLINE_TEXT_FLAG);
         _signupLink.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -92,7 +94,8 @@ public class LoginActivity extends AppCompatActivity {
         });
 
         _passwordResetLink = (TextView) findViewById(R.id.forgot_password);
-        _passwordResetLink.setPaintFlags(_signupLink.getPaintFlags() |   Paint.UNDERLINE_TEXT_FLAG);
+        _passwordResetLink.setTypeface(EasyFonts.robotoBold(this));
+        //_passwordResetLink.setPaintFlags(_signupLink.getPaintFlags() |   Paint.UNDERLINE_TEXT_FLAG);
         _passwordResetLink.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
