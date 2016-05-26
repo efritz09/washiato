@@ -30,7 +30,8 @@
         <activity
             android:name=".ControlActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
-            android:label="@string/title_activity_control">
+            android:label="@string/title_activity_control"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.nfc.action.TAG_DISCOVERED" />
 
@@ -40,7 +41,8 @@
         <activity
             android:name=".ClusterActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
-            android:label="@string/title_activity_cluster" />
+            android:label="@string/title_activity_cluster"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".SplashActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
@@ -52,7 +54,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".TabActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"/>
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:screenOrientation="portrait"/>
     </application>
 
 </manifest>

@@ -16,6 +16,7 @@ import android.support.v7.widget.Toolbar;
 
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
+import com.vstechlab.easyfonts.EasyFonts;
 
 import java.util.Map;
 
@@ -45,7 +46,8 @@ public class SignUpActivity extends AppCompatActivity {
         _passwordConfirmText = (TextInputEditText) findViewById(R.id.etConfirmPassword);
 
         _cancelLink = (TextView) findViewById(R.id.link_cancel);
-        _cancelLink.setPaintFlags(_cancelLink.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+        _cancelLink.setTypeface(EasyFonts.robotoBold(this));
+        //_cancelLink.setPaintFlags(_cancelLink.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
         _cancelLink.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

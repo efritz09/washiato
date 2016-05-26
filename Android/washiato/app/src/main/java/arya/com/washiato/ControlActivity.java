@@ -19,6 +19,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -38,6 +39,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.RemoteViews;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -54,6 +56,8 @@ import java.text.DateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+
+import arya.com.washiato.helper.WaveView;
 
 public class ControlActivity extends AppCompatActivity {
 
@@ -84,9 +88,12 @@ public class ControlActivity extends AppCompatActivity {
     //Button button_nfcOn;
     //EditText editText_machine_name;
     //Button button_machine_select;
-    static Button button_omw;
+    //static Button button_omw;
+    static boolean omw = false;
     private TextView text_logout_link;
     private TextView text_enable_NFC;
+
+    private RelativeLayout info;
 
     public static Map thisUser;
     static public Map thisMachine;
@@ -100,8 +107,17 @@ public class ControlActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_control);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        // Hide the action bar if it's visible
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.hide();
+        }
+
+
+
         text_user = (TextView) findViewById(R.id.text_user);
         text_user.setTypeface(EasyFonts.robotoBlack(this));
         text_cluster = (TextView) findViewById(R.id.text_cluster);
@@ -115,7 +131,7 @@ public class ControlActivity extends AppCompatActivity {
         text_machine_status = (TextView) findViewById(R.id.text_machine_status);
         text_machine_status.setTypeface(EasyFonts.robotoThin(this));
 
-        button_omw = (Button)findViewById(R.id.button_omw);
+        //button_omw = (Button)findViewById(R.id.button_omw);
 
         text_enable_NFC = (TextView) findViewById(R.id.enable_nfc);
         text_enable_NFC.setTypeface(EasyFonts.robotoBold(this));
@@ -171,6 +187,35 @@ public class ControlActivity extends AppCompatActivity {
                 }
             });
         }
+
+        // Long listener to unpair from a washiato
+        info = (RelativeLayout) findViewById(R.id.info);
+        info.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                String currentMachine = "Zeus";
+                if(currentMachine != null) {
+                    AlertDialog.Builder alertbox = new AlertDialog.Builder(ControlActivity.this);
+                    alertbox.setTitle("Unpair from: " + currentMachine + "?");
+//                    alertbox.setMessage("Unpair from: " + currentMachine + "?");
+                    alertbox.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            //set this as default
+                        }
+                    });
+                    alertbox.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                        }
+                    });
+                    alertbox.show();
+                }
+
+                return false;
+            }
+        });
+
 
     }
 
@@ -306,7 +351,8 @@ public class ControlActivity extends AppCompatActivity {
                     text_machine_status.setTextColor(cont.getResources().getColor(R.color.green));
                     text_machine.setTextColor(cont.getResources().getColor(R.color.green));
                     text_time.setText("");
-                    if(button_omw != null) button_omw.setVisibility(View.INVISIBLE);
+                    omw = false;
+                    //if(button_omw != null) button_omw.setVisibility(View.INVISIBLE);
                 } else if(status == 1) {
                     Log.i(TAG,"machine is finished");
                     if(washer) text_machine_status.setText(R.string.wash_finished_flavortext);
@@ -315,7 +361,8 @@ public class ControlActivity extends AppCompatActivity {
                     text_machine.setTextColor(cont.getResources().getColor(R.color.gold));
                     text_time.setText(Integer.toString((int)(long)thisMachine.get("time")) + " minutes ago");
                     //set up button
-                    if(button_omw != null) button_omw.setVisibility(View.VISIBLE);
+                    omw = true;
+                    //if(button_omw != null) button_omw.setVisibility(View.VISIBLE);
                     //only create notification if omw is false. Prevents setting the omw from buzzing the user
                     if(!(boolean)thisMachine.get("omw")) createNotification(cont);
 
@@ -326,7 +373,8 @@ public class ControlActivity extends AppCompatActivity {
                     text_machine_status.setTextColor(cont.getResources().getColor(R.color.red));
                     text_machine.setTextColor(cont.getResources().getColor(R.color.red));
                     text_time.setText("");
-                    if(button_omw != null) button_omw.setVisibility(View.INVISIBLE);
+                    omw = false;
+                    //if(button_omw != null) button_omw.setVisibility(View.INVISIBLE);
                 }
                 else Log.i(TAG,"Somehow we have a status issue");
             }
@@ -356,13 +404,14 @@ public class ControlActivity extends AppCompatActivity {
 
     //function implemented when "I'm on my way" button is pressed; updates omw variable under Machines in Firebase
     public void omw(View view) {
-        Log.i(TAG,"OMW");
-        if(getNfcStatus()==true){
-            ref.child("Machines").child(serial).child("omw").setValue(true); //change omw variable under Machines in Firebase
-            Toast.makeText(context, getString(R.string.omw), Toast.LENGTH_LONG).show(); //show toast for OMW
-        }
-        else {
-            Toast.makeText(context, getString(R.string.no_connection), Toast.LENGTH_LONG).show(); //show toast for OMW
+        if(omw) {
+            Log.i(TAG, "OMW");
+            if (getNfcStatus() == true) {
+                ref.child("Machines").child(serial).child("omw").setValue(true); //change omw variable under Machines in Firebase
+                Toast.makeText(context, getString(R.string.omw), Toast.LENGTH_LONG).show(); //show toast for OMW
+            } else {
+                Toast.makeText(context, getString(R.string.no_connection), Toast.LENGTH_LONG).show(); //show toast for OMW
+            }
         }
     }
 
