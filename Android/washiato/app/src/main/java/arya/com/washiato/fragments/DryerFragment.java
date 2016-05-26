@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import arya.com.washiato.ClusterStatusAdapter;
+import arya.com.washiato.ControlActivity;
 import arya.com.washiato.Machine;
 import arya.com.washiato.R;
 import arya.com.washiato.TabActivity;
@@ -74,7 +75,7 @@ public class DryerFragment extends Fragment {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
     //                      //set the serial somehow
-                            TabActivity.ConnectToMachine(machine.getName(),getActivity());
+                            ControlActivity.ConnectToMachine(machine.getName(),getActivity());
                         }
                     });
                     alertbox.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {

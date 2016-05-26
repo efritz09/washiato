@@ -69,27 +69,28 @@ public class ControlActivity extends AppCompatActivity {
                     MifareUltralight.class.getName(), Ndef.class.getName()
             }
     };
-    public Firebase ref;
+    public static Firebase ref;
     private static final String FIREBASE_URL = "https://washiato.firebaseio.com/";
     private final int MY_PERMISSIONS_REQUEST_LOCATION = 0;
     private static final String TAG = "ControlActivity";
-    String defClus;
-    TextView text_user;
-    TextView text_cluster;
-    TextView text_cluster_current;
-    TextView text_time;
-    TextView text_machine;
-    TextView text_machine_status;
+    static String defClus;
+    static TextView text_user;
+    static TextView text_cluster;
+    static TextView text_cluster_current;
+    static TextView text_time;
+    static TextView text_machine;
+    static TextView text_machine_status;
+    static Button button_omw;
     Button button_nfcOn;
     EditText editText_machine_name;
     Button button_machine_select;
     public static Map thisUser;
-    public Map thisMachine;
+    static public Map thisMachine;
     public static boolean is_nfc_detected = false;
     public static String serial;
     final Context context = this; //Set context
     ValueEventListener user_listener;
-    ValueEventListener machine_listener;
+    static ValueEventListener machine_listener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,6 +111,7 @@ public class ControlActivity extends AppCompatActivity {
         text_machine_status = (TextView) findViewById(R.id.text_machine_status);
         text_machine_status.setTypeface(EasyFonts.robotoThin(this));
 
+        button_omw = (Button)findViewById(R.id.button_omw);
         button_nfcOn = (Button)findViewById(R.id.button_nfc);
         editText_machine_name = (EditText)findViewById(R.id.edit_machine_id);
         button_machine_select = (Button)findViewById(R.id.button_select_machine);
@@ -221,11 +223,11 @@ public class ControlActivity extends AppCompatActivity {
             AuthData authData = ref.getAuth();
             //Push to Firebase (temporarily)
             ref.child("Users").child(authData.getUid()).child("Washer NFC Serial").setValue(serial);
-            setMachineListener();
+            setMachineListener(this);
         }
     }
 
-    public void setMachineListener() {
+    public static void setMachineListener(final Context cont) {
         Log.i(TAG,"setting up machine listener");
         //create a listener for changes in the system
         machine_listener = ref.child("Machines").child(serial).addValueEventListener(new ValueEventListener() {
@@ -235,7 +237,7 @@ public class ControlActivity extends AppCompatActivity {
                 thisMachine = (Map<String, String>) dataSnapshot.getValue();
                 if(thisMachine == null) {
                     Log.i(TAG, "Unrecognized NFC tag scanned: " + serial);
-                    Toast.makeText(context, "No machine with this serial number found.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(cont, "No machine with this serial number found.", Toast.LENGTH_LONG).show();
 //                        ((TextView)findViewById(R.id.text_nfc_serial)).setText("NFC Tag\n" + serial + "\n(Not found in database)");
                     return;
                 }
@@ -254,7 +256,7 @@ public class ControlActivity extends AppCompatActivity {
                         Log.i(TAG,"cluster = " + cluster + ", def = " + defClus);
 
 
-                        AlertDialog.Builder alertbox = new AlertDialog.Builder(ControlActivity.this);
+                        AlertDialog.Builder alertbox = new AlertDialog.Builder(cont);
                         alertbox.setTitle("New Home?");
                         alertbox.setMessage("Set " + cluster + " as your home cluster?");
                         alertbox.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
@@ -289,34 +291,33 @@ public class ControlActivity extends AppCompatActivity {
                 //update the shit with statuses
                 int status = (int)(long)thisMachine.get("status");
                 boolean washer = (boolean)thisMachine.get("washer");
-                Button button = (Button)findViewById(R.id.button_omw);
                 if(status == 0) {
                     Log.i(TAG,"machine is open");
                     text_machine_status.setText(R.string.machine_open_flavortext);
-                    text_machine_status.setTextColor(getResources().getColor(R.color.green));
-                    text_machine.setTextColor(getResources().getColor(R.color.green));
+                    text_machine_status.setTextColor(cont.getResources().getColor(R.color.green));
+                    text_machine.setTextColor(cont.getResources().getColor(R.color.green));
                     text_time.setText("");
-                    if(button != null) button.setVisibility(View.INVISIBLE);
+                    if(button_omw != null) button_omw.setVisibility(View.INVISIBLE);
                 } else if(status == 1) {
                     Log.i(TAG,"machine is finished");
                     if(washer) text_machine_status.setText(R.string.wash_finished_flavortext);
                     else text_machine_status.setText(R.string.dry_finished_flavortext);
-                    text_machine_status.setTextColor(getResources().getColor(R.color.gold));
-                    text_machine.setTextColor(getResources().getColor(R.color.gold));
+                    text_machine_status.setTextColor(cont.getResources().getColor(R.color.gold));
+                    text_machine.setTextColor(cont.getResources().getColor(R.color.gold));
                     text_time.setText(Integer.toString((int)(long)thisMachine.get("time")) + " minutes ago");
                     //set up button
-                    if(button != null) button.setVisibility(View.VISIBLE);
+                    if(button_omw != null) button_omw.setVisibility(View.VISIBLE);
                     //only create notification if omw is false. Prevents setting the omw from buzzing the user
-                    if(!(boolean)thisMachine.get("omw")) createNotification();
+                    if(!(boolean)thisMachine.get("omw")) createNotification(cont);
 
                 } else if(status == 2) {
                     Log.i(TAG,"machine is running");
                     if(washer) text_machine_status.setText(R.string.wash_running_flavortext);
                     else text_machine_status.setText(R.string.dry_running_flavortext);
-                    text_machine_status.setTextColor(getResources().getColor(R.color.red));
-                    text_machine.setTextColor(getResources().getColor(R.color.red));
+                    text_machine_status.setTextColor(cont.getResources().getColor(R.color.red));
+                    text_machine.setTextColor(cont.getResources().getColor(R.color.red));
                     text_time.setText("");
-                    if(button != null) button.setVisibility(View.INVISIBLE);
+                    if(button_omw != null) button_omw.setVisibility(View.INVISIBLE);
                 }
                 else Log.i(TAG,"Somehow we have a status issue");
             }
@@ -489,12 +490,13 @@ public class ControlActivity extends AppCompatActivity {
         }
     }
 
-    public void ConnectMachine(View view) {
-        InputMethodManager inputManager = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-        inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),InputMethodManager.HIDE_NOT_ALWAYS);
+    public static void ConnectToMachine(String name, final Context cont) {
+//        InputMethodManager inputManager = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+//        inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),InputMethodManager.HIDE_NOT_ALWAYS);
         //find the name of the machine and connect to it
-        final String machineName = editText_machine_name.getText().toString();
+        final String machineName = name;
         Log.i(TAG,"Finding " + machineName);
+        ref.child("Users").child(ref.getAuth().getUid()).child("CurrCluster").setValue(defClus); //current cluster to Firebase
 
         ref.child("Machines").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -509,13 +511,13 @@ public class ControlActivity extends AppCompatActivity {
                             Log.i(TAG,"WE FOUND IT!");
 //                            defClus = (String)machine.get("localCluster");
                             serial = entry.getKey();
-                            setMachineListener();
+                            setMachineListener(cont);
                             return;
                         }
                     }
                 }
                 Log.i(TAG,"couldn't find it...");
-                Toast.makeText(context, "No machine with this name was found.", Toast.LENGTH_LONG).show();
+                Toast.makeText(cont, "Could not connect", Toast.LENGTH_LONG).show();
 
             }
 
@@ -524,21 +526,6 @@ public class ControlActivity extends AppCompatActivity {
 
             }
         });
-
-        if(defClus != null) {//grab the cluster data and search for the machine name
-            ref.child("Clusters").child(defClus).addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-
-                }
-
-                @Override
-                public void onCancelled(FirebaseError firebaseError) {
-
-                }
-            });
-
-        }
 
     }
 
@@ -601,26 +588,26 @@ public class ControlActivity extends AppCompatActivity {
     }
 
     /* notification area */
-    public void createNotification() {
+    public static void createNotification(Context cont) {
         long[] pattern = {0,100,100,100,250,500};
-        Vibrator v = (Vibrator) this.context.getSystemService(Context.VIBRATOR_SERVICE);
+        Vibrator v = (Vibrator) cont.getSystemService(Context.VIBRATOR_SERVICE);
         v.vibrate(pattern,-1);
 //        v.vibrate(500);
         Log.i(TAG,"setting up notification");
         Bitmap icon;
         String title;
         if((boolean)thisMachine.get("washer")) {
-            icon = BitmapFactory.decodeResource(context.getResources(),R.mipmap.wm_finished);
+            icon = BitmapFactory.decodeResource(cont.getResources(),R.mipmap.wm_finished);
             title = "Your Laundry is washed!";
         }else {
-            icon = BitmapFactory.decodeResource(context.getResources(),R.mipmap.dry_finished);
+            icon = BitmapFactory.decodeResource(cont.getResources(),R.mipmap.dry_finished);
             title = "Your Laundry is dry!";
         }
 
 
         final String time = DateFormat.getTimeInstance().format(new Date()).toString();
         NotificationCompat.Builder mBuilder =
-                new NotificationCompat.Builder(this)
+                new NotificationCompat.Builder(cont)
                         .setSmallIcon(R.drawable.ic_wm_icon)
                         .setLargeIcon(icon)
                         .setContentTitle(title)
@@ -643,7 +630,7 @@ public class ControlActivity extends AppCompatActivity {
 //                );
 //        mBuilder.setContentIntent(resultPendingIntent);
         NotificationManager mNotificationManager =
-                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                (NotificationManager) cont.getSystemService(Context.NOTIFICATION_SERVICE);
         // mId allows you to update the notification later on.
         mNotificationManager.notify(1, mBuilder.build());
     }

@@ -62,15 +62,15 @@ public class WasherFragment extends Fragment {
                 @Override
                 public boolean onItemLongClick(AdapterView<?> av, View v, int pos, long id) {
                     Log.i(TAG, "longclicked");
-                    final Machine machine = TabActivity.dryerList.get(pos);
+                    final Machine machine = TabActivity.washerList.get(pos);
                     AlertDialog.Builder alertbox = new AlertDialog.Builder(getActivity());
                     alertbox.setTitle("Connect to " + machine.getName() + "?");
 //                    alertbox.setMessage(R.string.alert_nfc_on_message);
                     alertbox.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            //                      //set the serial somehow
-                            TabActivity.ConnectToMachine(machine.getName(),getActivity());
+                            //set the serial somehow
+                            ControlActivity.ConnectToMachine(machine.getName(),getActivity());
                         }
                     });
                     alertbox.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {

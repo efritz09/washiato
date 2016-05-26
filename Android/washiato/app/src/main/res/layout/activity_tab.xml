@@ -14,7 +14,7 @@ tools:context=".TabActivity">
         <TextView
             android:id="@+id/text_cluster_name"
             android:text="No Cluster Data Available"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="60dp"
             android:layout_marginLeft="10dp"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:layout_width="wrap_content"
@@ -22,7 +22,7 @@ tools:context=".TabActivity">
 
         <TextView
             android:id="@+id/text_cluster_location"
-            android:text=""
+            android:text="s"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -32,7 +32,7 @@ tools:context=".TabActivity">
 
         <TextView
             android:id="@+id/text_cluster_washers_available"
-            android:text=""
+            android:text="s"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:layout_alignStart="@id/text_cluster_name"
             android:layout_below="@id/text_cluster_location"
@@ -41,7 +41,7 @@ tools:context=".TabActivity">
 
         <TextView
             android:id="@+id/text_cluster_dryers_available"
-            android:text=""
+            android:text="s"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:layout_alignStart="@id/text_cluster_name"
             android:layout_below="@id/text_cluster_washers_available"
@@ -80,7 +80,6 @@ tools:context=".TabActivity">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_marginTop="100dp"
         android:layout_height="wrap_content"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
@@ -97,6 +96,7 @@ tools:context=".TabActivity">
         android:id="@+id/viewpager"
         android:layout_width="match_parent"
         android:layout_height="350dp"
+        android:layout_marginTop="100dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"  />
 
 </android.support.design.widget.CoordinatorLayout>
