@@ -77,6 +77,7 @@ public class ControlActivity extends AppCompatActivity {
     private static final String FIREBASE_URL = "https://washiato.firebaseio.com/";
     private final int MY_PERMISSIONS_REQUEST_LOCATION = 0;
     private static final String TAG = "ControlActivity";
+    public static volatile boolean connected = false;
 
     static String defClus;
     static TextView text_user;
@@ -93,7 +94,7 @@ public class ControlActivity extends AppCompatActivity {
     private TextView text_logout_link;
     private TextView text_enable_NFC;
 
-    private RelativeLayout info;
+    private static RelativeLayout info;
 
     public static Map thisUser;
     static public Map thisMachine;
@@ -193,8 +194,8 @@ public class ControlActivity extends AppCompatActivity {
         info.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                String currentMachine = "Zeus";
-                if(currentMachine != null) {
+                if(thisMachine != null) {
+                    String currentMachine = (String)thisMachine.get("name");
                     AlertDialog.Builder alertbox = new AlertDialog.Builder(ControlActivity.this);
                     alertbox.setTitle("Unpair from: " + currentMachine + "?");
 //                    alertbox.setMessage("Unpair from: " + currentMachine + "?");
@@ -202,6 +203,20 @@ public class ControlActivity extends AppCompatActivity {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             //set this as default
+                            //remove the listener
+                            if(machine_listener != null) {
+                                Log.i(TAG,"removing machine listener");
+                                ref.removeEventListener(machine_listener);
+                                machine_listener = null;
+                            }
+                            connected = false;
+                            thisMachine = null;
+                            //update the settext
+                            text_machine.setText("Hold phone next to a washiato to connect!");
+                            text_machine.setTextColor(getResources().getColor(R.color.colorAccent));
+                            text_machine_status.setText("");
+                            text_time.setText("");
+
                         }
                     });
                     alertbox.setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -277,6 +292,7 @@ public class ControlActivity extends AppCompatActivity {
             AuthData authData = ref.getAuth();
             //Push to Firebase (temporarily)
             ref.child("Users").child(authData.getUid()).child("Washer NFC Serial").setValue(serial);
+            connected = true;
             setMachineListener(this);
         }
     }
@@ -287,6 +303,10 @@ public class ControlActivity extends AppCompatActivity {
         machine_listener = ref.child("Machines").child(serial).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                if(connected = false) {
+                    Log.i(TAG,"changed, but we're not connected");
+                    return;
+                }
                 if(ref.getAuth() == null) return;
                 thisMachine = (Map<String, String>) dataSnapshot.getValue();
                 if(thisMachine == null) {
@@ -299,6 +319,10 @@ public class ControlActivity extends AppCompatActivity {
                 final String cluster = (String) thisMachine.get("localCluster");
                 Log.i(TAG, "found cluster: " + cluster);
                 //first handle the anonymous user case
+                if(connected = false) {
+                    Log.i(TAG,"changed, but we're not connected");
+                    return;
+                }else Log.i(TAG,"connected, updating");
                 if(ref.getAuth().getProvider().equals("anonymous")) {
                     thisUser.put("CurrCluster",cluster);
                     thisUser.put("defaultCluster",cluster);
@@ -569,6 +593,7 @@ public class ControlActivity extends AppCompatActivity {
                             Log.i(TAG,"WE FOUND IT!");
 //                            defClus = (String)machine.get("localCluster");
                             serial = entry.getKey();
+                            connected = true;
                             setMachineListener(cont);
                             return;
                         }
