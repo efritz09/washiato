@@ -9,43 +9,73 @@ tools:context=".TabActivity">
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-    <TextView
-        android:id="@+id/text_cluster_name"
-        android:text="No Cluster Data Available"
-        android:layout_marginTop="10dp"
-        android:layout_marginLeft="10dp"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-
-    <TextView
-        android:id="@+id/text_cluster_location"
-        android:text=""
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/text_cluster_name"
-        android:layout_toEndOf="@+id/text_cluster_name"
-        android:layout_marginStart="27dp" />
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/text_cluster_name"
+            android:text="No Cluster Data Available"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="10dp"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
 
-    <TextView
-        android:id="@+id/text_cluster_washers_available"
-        android:text=""
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:layout_alignStart="@id/text_cluster_name"
-        android:layout_below="@id/text_cluster_location"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/text_cluster_location"
+            android:text=""
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/text_cluster_name"
+            android:layout_toEndOf="@+id/text_cluster_name"
+            android:layout_marginStart="27dp" />
 
-    <TextView
-        android:id="@+id/text_cluster_dryers_available"
-        android:text=""
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:layout_alignStart="@id/text_cluster_name"
-        android:layout_below="@id/text_cluster_washers_available"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/text_cluster_washers_available"
+            android:text=""
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:layout_alignStart="@id/text_cluster_name"
+            android:layout_below="@id/text_cluster_location"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/text_cluster_dryers_available"
+            android:text=""
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:layout_alignStart="@id/text_cluster_name"
+            android:layout_below="@id/text_cluster_washers_available"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/button_tab_logout"
+            android:layout_width="120dp"
+            android:layout_height="wrap_content"
+            android:text="Log out"
+            android:onClick="LogOut"
+            android:backgroundTint="@color/white"
+            android:textColor="@color/colorAccentDark"
+            android:layout_alignParentBottom="true"
+            android:layout_alignStart="@+id/text_cluster_dryers_available" />
+
+        <!--NO NFC: turn on NFC button-->
+        <Button
+            android:id="@+id/button_nfc"
+            android:layout_width="120dp"
+            android:layout_height="wrap_content"
+            android:text="Turn on NFC"
+            android:onClick="LaunchNFC"
+            android:layout_alignTop="@id/button_tab_logout"
+            android:layout_marginEnd="10dp"
+            android:layout_alignParentEnd="true"
+            android:backgroundTint="@color/white"
+            android:textColor="@color/colorAccentDark"
+            android:visibility="visible" />
+
+
+
+
     </RelativeLayout>
 
     <android.support.design.widget.AppBarLayout
@@ -66,6 +96,7 @@ tools:context=".TabActivity">
     <android.support.v4.view.ViewPager
         android:id="@+id/viewpager"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="350dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"  />
+
 </android.support.design.widget.CoordinatorLayout>

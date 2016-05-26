@@ -6,8 +6,64 @@
 
     <!-- TODO: Update blank fragment layout -->
     <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:id="@+id/text_tab_user"
+        android:text="username"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="70dp"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentTop="true" />
+
+    <TextView
+        android:id="@+id/text_tab_cluster"
+        android:text=""
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/text_tab_user" />
+
+    <TextView
+        android:id="@+id/text_tab_cluster_current"
+        android:text=""
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/text_tab_cluster"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:id="@+id/text_tab_machine"
+        android:text="Not currently connected"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:layout_marginTop="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/text_tab_cluster_current"
+        android:layout_marginStart="20dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text=""
+        android:id="@+id/text_tab_machine_status"
+        android:layout_marginEnd="20dp"
+        android:layout_toRightOf="@id/text_tab_machine"
+        android:layout_alignTop="@id/text_tab_machine"/>
+
+
+    <TextView
+        android:id="@+id/text_tab_time"
+        android:layout_centerHorizontal="true"
+        android:text=""
+        android:layout_below="@id/text_tab_machine_status"
+        android:layout_toRightOf="@id/text_tab_machine"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        />
+
 
 </FrameLayout>
