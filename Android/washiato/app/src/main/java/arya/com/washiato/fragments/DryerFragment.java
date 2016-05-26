@@ -34,8 +34,7 @@ public class DryerFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_dryer, container, false);
 
@@ -60,6 +59,6 @@ public class DryerFragment extends Fragment {
     }
 
     public static void updateDryerList() {
-        dryerStatusAdapter.notifyDataSetChanged();
+        if(dryerStatusAdapter != null) dryerStatusAdapter.notifyDataSetChanged();
     }
 }

@@ -70,7 +70,7 @@ public class WasherFragment extends Fragment {
     }
 
     public static void updateWasherList() {
-        washerStatusAdapter.notifyDataSetChanged();
+        if(washerStatusAdapter != null) washerStatusAdapter.notifyDataSetChanged();
     }
 
 }
